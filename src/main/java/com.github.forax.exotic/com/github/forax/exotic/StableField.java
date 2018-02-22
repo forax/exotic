@@ -37,7 +37,7 @@ import java.util.function.ToLongFunction;
  *     // enforce singleton
  *   }
  *   
- *   volatile int cpuCount;  // stable
+ *   int cpuCount;  // stable
  *
  *   public int getCpuCount() {
  *     int cpuCount = CPU_COUNT.applyAsInt(this);
