@@ -10,7 +10,9 @@ resolver.
     ))
 
 docer.
-  rawArguments(list("-link", "https://docs.oracle.com/javase/9/docs/api/"))
+    rawArguments(list(
+        "-quiet",
+        "-link", "https://docs.oracle.com/javase/9/docs/api/"))
    
 packager.
     moduleMetadata(list(
