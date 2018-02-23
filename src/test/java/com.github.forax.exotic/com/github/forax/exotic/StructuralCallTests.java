@@ -74,7 +74,6 @@ class StructuralCallTests {
     void m(int i) { /* empty */ }
     void m(double d) { /* empty */ }
   }
-  
   @Test
   void callingAMethodWithTheWrongClass() {
     WrongParameters wrongParameters = new WrongParameters();
@@ -84,5 +83,24 @@ class StructuralCallTests {
     assertThrows(ClassCastException.class, () -> call2.invoke(wrongParameters, "oops"));
     StructuralCall call3 = StructuralCall.create(lookup(), "m", methodType(void.class, double.class));
     assertThrows(ClassCastException.class, () -> call3.invoke(wrongParameters, "oops"));
+  }
+  
+  static class WrongNumberOfArguments {
+    long m(int i, long l) {
+      return i + l;
+    }
+  }
+  @Test
+  void callingAMethodWithTheWrongNumberOfArguments() {
+    WrongNumberOfArguments wrongNumberOfArguments = new WrongNumberOfArguments();
+    StructuralCall call = StructuralCall.create(lookup(), "m", methodType(long.class, int.class, long.class)); // 2 parameters
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments));  // 0 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0));  // 1 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0, 0, 0));  // 3 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0, 0, 0, 0));  // 4 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0, 0, 0, 0, 0));  // 5 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0, 0, 0, 0, 0, 0));  // 6 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0, 0, 0, 0, 0, 0, 0));  // 7 argument
+    assertThrows(IllegalArgumentException.class, () -> call.invoke(wrongNumberOfArguments, 0, 0, 0, 0, 0, 0, 0, 0));  // 8 argument
   }
 }

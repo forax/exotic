@@ -32,8 +32,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 public interface StructuralCall {
   /**
    * Calls the structural method with no argument.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -42,13 +40,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver);
   
   /**
    * Calls the structural method with one argument.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -58,13 +55,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1);
   
   /**
    * Calls the structural method with two arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -75,13 +71,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2);
   
   /**
    * Calls the structural method with three arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -93,13 +88,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2, Object arg3);
   
   /**
    * Calls the structural method with four arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -112,13 +106,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2, Object arg3, Object arg4);
   
   /**
    * Calls the structural method with five arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -132,13 +125,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5);
   
   /**
    * Calls the structural method with six arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -153,13 +145,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6);
   
   /**
    * Calls the structural method with seven arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -175,13 +166,12 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7);
   
   /**
    * Calls the structural method with eight arguments.
-   * If the structural method is created with more parameters, this calls will add enough null arguments to match,
-   * if the structural method is created with less parameters, this calls will drop enough arguments to match.
    * 
    * @param <R> type of the return type.
    * @param receiver the receiver of the call.
@@ -198,6 +188,7 @@ public interface StructuralCall {
    *         and the same parameter types.
    * @throws IllegalAccessError if the receiver is not accessible from the lookup that was pass as parameter
    *         when creating this StructuralCall.
+   * @throws IllegalArgumentException if the structural method was created with more or less parameters.
    */
   <R> R invoke(Object receiver, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8);
   
@@ -212,9 +203,9 @@ public interface StructuralCall {
    */
   static StructuralCall create(Lookup lookup, String name, MethodType type) {
     MethodHandle mh = StructuralCallImpl.findMethodHandle(lookup, name, type);
-    return (StructuralCallImpl)(receiver, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) -> {
+    return (StructuralCallImpl)(paramCount, receiver, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8) -> {
       try {
-        return mh.invokeExact(receiver, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        return mh.invokeExact(paramCount, receiver, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
       } catch (Throwable e) {
         throw rethrow(e);
       }
