@@ -6,7 +6,8 @@ but a final field of an object which is a constant is not itself considered as a
 Exotic classes allows to see a constant's field as a constant, a result of a calculation as a constant,
 to change at runtime the value of a constant, etc. 
 
-### MostlyConstant
+
+### MostlyConstant - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/MostlyConstant.html)
 
 A constant for the VM that can be changed by de-optimizing all the codes that contain the previous value of the constant.
 
@@ -22,7 +23,7 @@ public static void setFoo(int value) {
 }
 ```
 
-### StableField
+### StableField - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StableField.html)
 
 A field that becomes a constant if the object itsef is constant and the field is initialized
 
@@ -47,7 +48,7 @@ enum Option {
 Option.a.upperCase()  // constant "A"
 ```
 
-### ConstantMemoizer
+### ConstantMemoizer - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/ConstantMemoizer.html) 
 
 A function that returns a constant value if its parameter is a constant.
 
@@ -58,7 +59,7 @@ private static final Function<String, Integer> MEMOIZER =
 MEMOIZER.apply("foo") // constant 3
 ```
 
-### [StructuralCall](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StructuralCall.html)
+### StructuralCall - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StructuralCall.html)
 
 A method call that can call different method if they have the same name and same parameter types.
 
