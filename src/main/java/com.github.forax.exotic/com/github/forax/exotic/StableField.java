@@ -10,7 +10,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MutableCallSite;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
@@ -103,7 +102,7 @@ public final class StableField {
       try {
         return (V)mh.invokeExact(object);
       } catch(Throwable t) {
-        throw rethrow(t);
+        throw Thrower.rethrow(t);
       }
     };
   }
@@ -144,7 +143,7 @@ public final class StableField {
       try {
         return (int)mh.invokeExact(object);
       } catch(Throwable t) {
-        throw rethrow(t);
+        throw Thrower.rethrow(t);
       }
     };
   }
@@ -185,7 +184,7 @@ public final class StableField {
       try {
         return (long)mh.invokeExact(object);
       } catch(Throwable t) {
-        throw rethrow(t);
+        throw Thrower.rethrow(t);
       }
     };
   }
@@ -226,7 +225,7 @@ public final class StableField {
       try {
         return (double)mh.invokeExact(object);
       } catch(Throwable t) {
-        throw rethrow(t);
+        throw Thrower.rethrow(t);
       }
     };
   }
@@ -240,16 +239,6 @@ public final class StableField {
     } catch(IllegalAccessException e) {
       throw (IllegalAccessError)new IllegalAccessError().initCause(e);
     }
-  }
-  
-  private static UndeclaredThrowableException rethrow(Throwable t) {
-    if (t instanceof RuntimeException) {
-      throw (RuntimeException)t;
-    }
-    if (t instanceof Error) {
-      throw (Error)t;
-    }
-    return new UndeclaredThrowableException(t);
   }
   
   private static class StableFieldCS extends MutableCallSite {

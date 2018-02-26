@@ -4,7 +4,6 @@ import static java.lang.invoke.MethodHandles.constant;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MutableCallSite;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Objects;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
@@ -90,7 +89,7 @@ public final class MostlyConstant<T> {
       try {
         return (T)invoker.invokeExact();
       } catch (Throwable e) {
-        throw rethrow(e);
+        throw Thrower.rethrow(e);
       }
     };
     /*return new Supplier<>() {
@@ -99,7 +98,7 @@ public final class MostlyConstant<T> {
         try {
           return (T)invoker.invokeExact();
         } catch (Throwable e) {
-          throw rethrow(e);
+          throw Thrower.rethrow(e);
         } 
       }
     };*/
@@ -123,7 +122,7 @@ public final class MostlyConstant<T> {
       try {
         return (int)invoker.invokeExact();
       } catch (Throwable e) {
-        throw rethrow(e);
+        throw Thrower.rethrow(e);
       }
     };
   }
@@ -146,7 +145,7 @@ public final class MostlyConstant<T> {
       try {
         return (long)invoker.invokeExact();
       } catch (Throwable e) {
-        throw rethrow(e);
+        throw Thrower.rethrow(e);
       }
     };
   }
@@ -169,18 +168,8 @@ public final class MostlyConstant<T> {
       try {
         return (double)invoker.invokeExact();
       } catch (Throwable e) {
-        throw rethrow(e);
+        throw Thrower.rethrow(e);
       }
     };
-  }
-  
-  private static UndeclaredThrowableException rethrow(Throwable t) {
-    if (t instanceof RuntimeException) {
-      throw (RuntimeException)t;
-    }
-    if (t instanceof Error) {
-      throw (Error)t;
-    }
-    return new UndeclaredThrowableException(t);
   }
 }

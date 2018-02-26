@@ -12,7 +12,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -69,19 +68,9 @@ public class ConstantMemoizer {
       try {
         return (V)mh.invokeExact(key);
       } catch (Throwable e) {
-        throw rethrow(e);
+        throw Thrower.rethrow(e);
       }
     };
-  }
-  
-  private static UndeclaredThrowableException rethrow(Throwable t) {
-    if (t instanceof RuntimeException) {
-      throw (RuntimeException)t;
-    }
-    if (t instanceof Error) {
-      throw (Error)t;
-    }
-    return new UndeclaredThrowableException(t);
   }
   
   private static class InliningCacheCallSite<K,V> extends MutableCallSite {

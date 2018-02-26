@@ -3,7 +3,6 @@ package com.github.forax.exotic;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.UndeclaredThrowableException;
 
 /**
  * Allow to call methods from different classes with no common interface
@@ -207,18 +206,8 @@ public interface StructuralCall {
       try {
         return mh.invokeExact(paramCount, receiver, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
       } catch (Throwable e) {
-        throw rethrow(e);
+        throw Thrower.rethrow(e);
       }
     };
-  }
-  
-  private static UndeclaredThrowableException rethrow(Throwable t) {
-    if (t instanceof RuntimeException) {
-      throw (RuntimeException)t;
-    }
-    if (t instanceof Error) {
-      throw (Error)t;
-    }
-    return new UndeclaredThrowableException(t);
   }
 }
