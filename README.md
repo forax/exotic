@@ -3,7 +3,7 @@ A bestiary of classes implementing exotic semantics in Java
 
 In Java, a static final field is considered as a constant by the virtual machine,
 but a final field of an object which is a constant is not itself considered as a constant.
-Exotic classes allows to see a constant's field as a constant, a result of a calculation as a constant,
+Exotic allows to see a constant's field as a constant, a result of a calculation as a constant,
 to change at runtime the value of a constant, etc. 
 
 
