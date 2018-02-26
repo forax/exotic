@@ -61,7 +61,7 @@ MEMOIZER.apply("foo") // constant 3
 
 ### StructuralCall - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StructuralCall.html)
 
-A method call that can call different method if they have the same name and same parameter types.
+A method call that can call different method implementations if they share the same name and same parameter types.
 
 ```java
 private final static StructuralCall IS_EMPTY =
