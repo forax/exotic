@@ -30,7 +30,7 @@ import java.util.function.Function;
  *                                            // the result will be considered as constant. 
  *  </pre>
  */
-public class ConstantMemoizer {
+public final class ConstantMemoizer {
   private ConstantMemoizer() {
     throw new AssertionError();
   }
