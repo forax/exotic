@@ -18,8 +18,7 @@ resolver.
 
 compiler.
     rawArguments(list(
-        "--processor-module-path", "deps"
-//        "-processor", "org.openjdk.jmh.generators.BenchmarkProcessor"
+        "--processor-module-path", "deps"   // enable JMH annotation processor
     ))
 
 docer.
@@ -32,6 +31,6 @@ packager.
         "com.github.forax.exotic@1.0"
     ))   
     
-run(resolver, modulefixer, compiler, tester, docer, packager, perfer)
+run(resolver, modulefixer, compiler, tester, docer, packager/*, perfer*/)
 
 /exit
