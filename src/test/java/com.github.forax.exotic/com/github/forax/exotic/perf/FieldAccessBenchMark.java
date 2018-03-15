@@ -62,7 +62,7 @@ public class FieldAccessBenchMark {
       StructuralCall.create(lookup(), "x", methodType(int.class));
   
   @Benchmark
-  public int static_final() {
+  public int field_access() {
     return 1_000 / static_final.x;
   }
 
