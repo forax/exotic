@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="deps/org.openjdk.jmh.jar"/>
 	<classpathentry kind="output" path="eclipse-output"/>
 </classpath>
