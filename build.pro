@@ -31,6 +31,8 @@ packager.
         "com.github.forax.exotic@1.0"
     ))   
     
-run(resolver, modulefixer, compiler, tester, docer, packager/*, perfer*/)
+run(resolver, modulefixer, compiler, tester, docer, packager)
+
+pro.arguments().forEach(plugin -> run(plugin))   // run command line defined plugins
 
 /exit

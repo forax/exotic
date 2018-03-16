@@ -20,5 +20,5 @@ matrix:
 
 script:
   - ./pro/bin/pro version
-  - ./pro/bin/pro
+  - ./pro/bin/pro build perfer
 
