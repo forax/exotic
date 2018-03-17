@@ -15,6 +15,7 @@ class StableFieldExample2Tests {
     private static final Function<Option, String> UPPERCASE =
         StableField.getter(lookup(), Option.class, "uppercase", String.class);
 
+    @SuppressWarnings("unused")
     private String uppercase; // stable
 
     public String upperCase() {
