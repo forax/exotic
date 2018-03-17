@@ -6,7 +6,7 @@ import static java.lang.invoke.MethodType.methodType;
 import com.github.forax.exotic.ConstantMemoizer;
 import com.github.forax.exotic.StructuralCall;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+import java.util.function.ToIntFunction;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -56,8 +56,7 @@ public class MethodCallBenchMark {
 
   private static final I[] ARRAY = new I[] {new A(), new B(), new C()};
 
-  private static final Function<I, Integer> MEMOIZER =
-      ConstantMemoizer.memoizer(I::f, I.class, int.class);
+  private static final ToIntFunction<I> MEMOIZER = ConstantMemoizer.intMemoizer(I::f, I.class);
 
   private static final StructuralCall STRUCTURAL_CALL =
       StructuralCall.create(lookup(), "f", methodType(int.class));
@@ -75,7 +74,7 @@ public class MethodCallBenchMark {
   public int memoizer() {
     int sum = 0;
     for (I i : ARRAY) {
-      sum += MEMOIZER.apply(i);
+      sum += MEMOIZER.applyAsInt(i);
     }
     return sum;
   }

@@ -53,10 +53,10 @@ Option.a.upperCase()  // constant "A"
 A function that returns a constant value if its parameter is a constant.
 
 ```java
-private static final Function<String, Integer> MEMOIZER =
-    ConstantMemoizer.memoizer(String::length, String.class, int.class);
+private static final ToIntFunction<Level> MEMOIZER =
+    ConstantMemoizer.intMemoizer(Level::ordinal, Level.class);
 ...
-MEMOIZER.apply("foo") // constant 3
+MEMOIZER.applyAsInt("foo") // constant 3
 ```
 
 ### StructuralCall - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StructuralCall.html)

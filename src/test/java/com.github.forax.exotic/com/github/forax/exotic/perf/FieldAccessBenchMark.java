@@ -8,7 +8,6 @@ import com.github.forax.exotic.MostlyConstant;
 import com.github.forax.exotic.StableField;
 import com.github.forax.exotic.StructuralCall;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.IntSupplier;
 import java.util.function.ToIntFunction;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -53,8 +52,7 @@ public class FieldAccessBenchMark {
 
   private static final ToIntFunction<A> STABLE_X = StableField.intGetter(lookup(), A.class, "x");
 
-  private static final Function<A, Integer> MEMOIZER =
-      ConstantMemoizer.memoizer(A::x, A.class, int.class);
+  private static final ToIntFunction<A> MEMOIZER = ConstantMemoizer.intMemoizer(A::x, A.class);
 
   private static final StructuralCall STRUCTURAL_CALL =
       StructuralCall.create(lookup(), "x", methodType(int.class));
@@ -76,7 +74,7 @@ public class FieldAccessBenchMark {
 
   @Benchmark
   public int memoizer() {
-    return 1_000 / MEMOIZER.apply(static_final);
+    return 1_000 / MEMOIZER.applyAsInt(static_final);
   }
 
   @Benchmark
