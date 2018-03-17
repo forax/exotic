@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
@@ -39,6 +41,36 @@ class ConstantMemoizerTests {
     assertEquals(21, INT_FIBO.applyAsInt(7));
   }
 
+  private static final ToLongFunction<Integer> LONG_FIBO =
+      ConstantMemoizer.longMemoizer(n -> longFibo(n), int.class);
+
+  private static long longFibo(int n) {
+    if (n < 2) {
+      return 1L;
+    }
+    return LONG_FIBO.applyAsLong(n - 2) + LONG_FIBO.applyAsLong(n - 1);
+  }
+
+  @Test
+  void testLongRecursive() {
+    assertEquals(21L, LONG_FIBO.applyAsLong(7));
+  }
+
+  private static final ToDoubleFunction<Integer> DOUBLE_FIBO =
+      ConstantMemoizer.doubleMemoizer(n -> doubleFibo(n), int.class);
+
+  private static double doubleFibo(int n) {
+    if (n < 2) {
+      return 1.0;
+    }
+    return DOUBLE_FIBO.applyAsDouble(n - 2) + DOUBLE_FIBO.applyAsDouble(n - 1);
+  }
+
+  @Test
+  void testDoubleRecursive() {
+    assertEquals(21.0, DOUBLE_FIBO.applyAsDouble(7));
+  }
+
   @Test
   void testObjectSimple() {
     Function<String, Integer> parseInt =
@@ -55,6 +87,21 @@ class ConstantMemoizerTests {
   }
 
   @Test
+  void testLongSimple() {
+    ToLongFunction<String> parseLong = ConstantMemoizer.longMemoizer(Long::parseLong, String.class);
+    assertEquals(888L, parseLong.applyAsLong("888"));
+    assertEquals(888L, parseLong.applyAsLong("888"));
+  }
+
+  @Test
+  void testDoubleSimple() {
+    ToDoubleFunction<String> parseLong =
+        ConstantMemoizer.doubleMemoizer(Double::parseDouble, String.class);
+    assertEquals(999.0, parseLong.applyAsDouble("999"));
+    assertEquals(999.0, parseLong.applyAsDouble("999"));
+  }
+
+  @Test
   void testObjectArgumentNull() {
     Function<Integer, Integer> fun =
         ConstantMemoizer.memoizer(x -> x, Integer.class, Integer.class);
@@ -65,6 +112,18 @@ class ConstantMemoizerTests {
   void testIntArgumentNull() {
     ToIntFunction<Integer> fun = ConstantMemoizer.intMemoizer(x -> x, Integer.class);
     assertThrows(NullPointerException.class, () -> fun.applyAsInt(null));
+  }
+
+  @Test
+  void testLongArgumentNull() {
+    ToLongFunction<Integer> fun = ConstantMemoizer.longMemoizer(x -> x, Integer.class);
+    assertThrows(NullPointerException.class, () -> fun.applyAsLong(null));
+  }
+
+  @Test
+  void testDoubleArgumentNull() {
+    ToDoubleFunction<Integer> fun = ConstantMemoizer.doubleMemoizer(x -> x, Integer.class);
+    assertThrows(NullPointerException.class, () -> fun.applyAsDouble(null));
   }
 
   @Test
@@ -102,5 +161,25 @@ class ConstantMemoizerTests {
             (ToIntFunction<Integer>) (ToIntFunction<?>) (String x) -> Integer.parseInt(x),
             Integer.class);
     assertThrows(ClassCastException.class, () -> fun.applyAsInt(666));
+  }
+
+  @Test
+  void testLongWrongParameterType() {
+    @SuppressWarnings("unchecked")
+    ToLongFunction<Integer> fun =
+        ConstantMemoizer.longMemoizer(
+            (ToLongFunction<Integer>) (ToLongFunction<?>) (String x) -> Long.parseLong(x),
+            Integer.class);
+    assertThrows(ClassCastException.class, () -> fun.applyAsLong(666));
+  }
+
+  @Test
+  void testDoubleWrongParameterType() {
+    @SuppressWarnings("unchecked")
+    ToDoubleFunction<Integer> fun =
+        ConstantMemoizer.doubleMemoizer(
+            (ToDoubleFunction<Integer>) (ToDoubleFunction<?>) (String x) -> Double.parseDouble(x),
+            Integer.class);
+    assertThrows(ClassCastException.class, () -> fun.applyAsDouble(666));
   }
 }

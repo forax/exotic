@@ -14,11 +14,18 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
+import java.util.function.ToLongFunction;
 
 /**
  * Allow to see the return value of a function as a constant in case there are few possible pairs of
  * key/value.
+ *
+ * <p>The method {@link #memoizer(Function, Class, Class)} returns a general purpose memoizer while
+ * the methods {@link #intMemoizer(ToIntFunction, Class)}, {@link #longMemoizer(ToLongFunction,
+ * Class)} and {@link #doubleMemoizer(ToDoubleFunction, Class)} returns memoizers specialized if the
+ * value is an int, a long or a double (respectively).
  *
  * <p>Here is an example of usage
  *
@@ -27,10 +34,10 @@ import java.util.function.ToIntFunction;
  *    LOW, HIGH
  *  }
  *  ...
- *  private static final Function&lt;Level, Integer&gt; MEMOIZER = ConstantMemoizer.memoizer(Level::ordinal, Level.class, int.class);
+ *  private static final ToIntFunction&lt;Level&gt; MEMOIZER = ConstantMemoizer.intMemoizer(Level::ordinal, Level.class);
  *  ...
- *  int result = MEMOIZER.apply(Level.LOW));  // if this line is called several times,
- *                                            // the result will be considered as constant.
+ *  int result = MEMOIZER.applyAsInt(Level.LOW));  // if this line is called several times,
+ *                                                 // the result will be considered as constant.
  *  </pre>
  */
 public final class ConstantMemoizer {
@@ -111,6 +118,80 @@ public final class ConstantMemoizer {
       Objects.requireNonNull(key);
       try {
         return (int) mh.invokeExact(key);
+      } catch (Throwable e) {
+        throw Thrower.rethrow(e);
+      }
+    };
+  }
+
+  /**
+   * Return a function that returns a constant value (for the Virtual Machine) for each key taken as
+   * argument. The value corresponding to a key is calculated by calling the {@code function} once
+   * by key and then cached in a code similar to a cascade of {@code if equals else}.
+   *
+   * <p>To find if a key was previously seen or not, {@link Object#equals(Object)} will be called to
+   * compare the actual key with possibly all the keys already seen, so if there are a lot of
+   * different keys, the performance in the worst case is like a linear search i.e. O(number of seen
+   * keys).
+   *
+   * @param <K> type of the keys.
+   * @param function a function that takes a non null key as argument and return a non null value.
+   * @param keyClass the class of the key, if it's a primitive type, the key value will be boxed
+   *     before calling the {@code function}.
+   * @return a function the function getting the value for a specific key.
+   * @throws NullPointerException if the {@code function}, the {@code keyClass} is null, or if the
+   *     function key.
+   * @throws ClassCastException if the function key types doesn't match the {@code keyClass}.
+   */
+  public static <K> ToLongFunction<K> longMemoizer(
+      ToLongFunction<? super K> function, Class<K> keyClass) {
+    Objects.requireNonNull(function);
+    Objects.requireNonNull(keyClass);
+    MethodHandle mh =
+        new InliningCacheCallSite<>(methodType(long.class, keyClass), function::applyAsLong)
+            .dynamicInvoker()
+            .asType(methodType(long.class, Object.class)); // erase
+    return key -> {
+      Objects.requireNonNull(key);
+      try {
+        return (long) mh.invokeExact(key);
+      } catch (Throwable e) {
+        throw Thrower.rethrow(e);
+      }
+    };
+  }
+
+  /**
+   * Return a function that returns a constant value (for the Virtual Machine) for each key taken as
+   * argument. The value corresponding to a key is calculated by calling the {@code function} once
+   * by key and then cached in a code similar to a cascade of {@code if equals else}.
+   *
+   * <p>To find if a key was previously seen or not, {@link Object#equals(Object)} will be called to
+   * compare the actual key with possibly all the keys already seen, so if there are a lot of
+   * different keys, the performance in the worst case is like a linear search i.e. O(number of seen
+   * keys).
+   *
+   * @param <K> type of the keys.
+   * @param function a function that takes a non null key as argument and return a non null value.
+   * @param keyClass the class of the key, if it's a primitive type, the key value will be boxed
+   *     before calling the {@code function}.
+   * @return a function the function getting the value for a specific key.
+   * @throws NullPointerException if the {@code function}, the {@code keyClass} is null, or if the
+   *     function key.
+   * @throws ClassCastException if the function key types doesn't match the {@code keyClass}.
+   */
+  public static <K> ToDoubleFunction<K> doubleMemoizer(
+      ToDoubleFunction<? super K> function, Class<K> keyClass) {
+    Objects.requireNonNull(function);
+    Objects.requireNonNull(keyClass);
+    MethodHandle mh =
+        new InliningCacheCallSite<>(methodType(double.class, keyClass), function::applyAsDouble)
+            .dynamicInvoker()
+            .asType(methodType(double.class, Object.class)); // erase
+    return key -> {
+      Objects.requireNonNull(key);
+      try {
+        return (double) mh.invokeExact(key);
       } catch (Throwable e) {
         throw Thrower.rethrow(e);
       }
