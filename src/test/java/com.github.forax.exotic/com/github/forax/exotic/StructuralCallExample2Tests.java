@@ -8,20 +8,25 @@ import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
 class StructuralCallExample2Tests {
-  private final static StructuralCall FOO =
+  private static final StructuralCall FOO =
       StructuralCall.create(lookup(), "foo", methodType(int.class, String.class));
-  
+
   static class A {
-    int foo(String s) { return s.length() * 1; }
+    int foo(String s) {
+      return s.length() * 1;
+    }
   }
+
   static class B {
-    int foo(String s) { return s.length() * 2; }
+    int foo(String s) {
+      return s.length() * 2;
+    }
   }
-  
+
   static int foo(Object o, String s) {
     return FOO.invoke(o, s);
   }
-  
+
   @Test
   void test() {
     assertEquals(5, foo(new A(), "hello"));

@@ -8,18 +8,18 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
 class StructuralCallExampleTests {
-  private final static StructuralCall IS_EMPTY =
-      StructuralCall.create(MethodHandles.lookup(), "isEmpty", MethodType.methodType(boolean.class));
-  
+  private static final StructuralCall IS_EMPTY =
+      StructuralCall.create(
+          MethodHandles.lookup(), "isEmpty", MethodType.methodType(boolean.class));
+
   static boolean isEmpty(Object o) {
     return IS_EMPTY.invoke(o);
   }
-  
+
   @Test
   void test() {
     assertTrue(isEmpty(List.of()));

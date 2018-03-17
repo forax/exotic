@@ -3,19 +3,17 @@ package com.github.forax.exotic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.IntSupplier;
-
 import org.junit.jupiter.api.Test;
-
-import com.github.forax.exotic.MostlyConstant;
 
 @SuppressWarnings("static-method")
 class MostlyConstantExampleTests {
   private static final MostlyConstant<Integer> FOO = new MostlyConstant<>(42, int.class);
   private static final IntSupplier FOO_GETTER = FOO.intGetter();
-  
+
   public static int getFoo() {
     return FOO_GETTER.getAsInt();
   }
+
   public static void setFoo(int value) {
     FOO.setAndDeoptimize(value);
   }

@@ -12,10 +12,7 @@ import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
-
 import org.junit.jupiter.api.Test;
-
-import com.github.forax.exotic.StableField;
 
 @SuppressWarnings("static-method")
 class StableFieldTests {
@@ -30,6 +27,7 @@ class StableFieldTests {
     assertNull(xField.apply(a));
     assertNull(xField.apply(a));
   }
+
   @Test
   void testObjectFieldStable() {
     Function<A, String> xField = StableField.getter(lookup(), A.class, "x", String.class);
@@ -39,6 +37,7 @@ class StableFieldTests {
     assertEquals("hello", xField.apply(a));
     assertEquals("hello", xField.apply(a));
   }
+
   @Test
   void testObjectFieldStableStill() {
     Function<A, String> xField = StableField.getter(lookup(), A.class, "x", String.class);
@@ -49,6 +48,7 @@ class StableFieldTests {
     a.x = "banzai";
     assertEquals("hello", xField.apply(a));
   }
+
   @Test
   void testObjectFieldNonConstant() {
     Function<A, String> xField = StableField.getter(lookup(), A.class, "x", String.class);
@@ -62,6 +62,7 @@ class StableFieldTests {
   static class B {
     int y;
   }
+
   @Test
   void testIntFieldUninitialized() {
     ToIntFunction<B> yField = StableField.intGetter(lookup(), B.class, "y");
@@ -69,6 +70,7 @@ class StableFieldTests {
     assertEquals(0, yField.applyAsInt(b));
     assertEquals(0, yField.applyAsInt(b));
   }
+
   @Test
   void testIntFieldStable() {
     ToIntFunction<B> yField = StableField.intGetter(lookup(), B.class, "y");
@@ -78,6 +80,7 @@ class StableFieldTests {
     assertEquals(42, yField.applyAsInt(b));
     assertEquals(42, yField.applyAsInt(b));
   }
+
   @Test
   void testIntFieldStableStill() {
     ToIntFunction<B> yField = StableField.intGetter(lookup(), B.class, "y");
@@ -88,6 +91,7 @@ class StableFieldTests {
     b.y = 777;
     assertEquals(42, yField.applyAsInt(b));
   }
+
   @Test
   void testIntFieldNonConstant() {
     ToIntFunction<B> yField = StableField.intGetter(lookup(), B.class, "y");
@@ -101,6 +105,7 @@ class StableFieldTests {
   static class C {
     long z;
   }
+
   @Test
   void testLongFieldUninitialized() {
     ToLongFunction<C> zField = StableField.longGetter(lookup(), C.class, "z");
@@ -108,6 +113,7 @@ class StableFieldTests {
     assertEquals(0, zField.applyAsLong(c));
     assertEquals(0, zField.applyAsLong(c));
   }
+
   @Test
   void testLongFieldStable() {
     ToLongFunction<C> zField = StableField.longGetter(lookup(), C.class, "z");
@@ -117,6 +123,7 @@ class StableFieldTests {
     assertEquals(42L, zField.applyAsLong(c));
     assertEquals(42L, zField.applyAsLong(c));
   }
+
   @Test
   void testLongFieldStableStill() {
     ToLongFunction<C> zField = StableField.longGetter(lookup(), C.class, "z");
@@ -127,6 +134,7 @@ class StableFieldTests {
     c.z = 777L;
     assertEquals(42L, zField.applyAsLong(c));
   }
+
   @Test
   void tesLongFieldNonConstant() {
     ToLongFunction<C> zField = StableField.longGetter(lookup(), C.class, "z");
@@ -140,6 +148,7 @@ class StableFieldTests {
   static class D {
     double z;
   }
+
   @Test
   void testDoubleFieldUninitialized() {
     ToDoubleFunction<D> zField = StableField.doubleGetter(lookup(), D.class, "z");
@@ -147,6 +156,7 @@ class StableFieldTests {
     assertEquals(0.0, zField.applyAsDouble(d));
     assertEquals(0.0, zField.applyAsDouble(d));
   }
+
   @Test
   void testDoubleFieldStable() {
     ToDoubleFunction<D> zField = StableField.doubleGetter(lookup(), D.class, "z");
@@ -156,6 +166,7 @@ class StableFieldTests {
     assertEquals(42.0, zField.applyAsDouble(d));
     assertEquals(42.0, zField.applyAsDouble(d));
   }
+
   @Test
   void testDoubleFieldStableStill() {
     ToDoubleFunction<D> zField = StableField.doubleGetter(lookup(), D.class, "z");
@@ -166,6 +177,7 @@ class StableFieldTests {
     d.z = 777;
     assertEquals(42.0, zField.applyAsDouble(d));
   }
+
   @Test
   void testDoubleFieldNonConstant() {
     ToDoubleFunction<D> zField = StableField.doubleGetter(lookup(), D.class, "z");
@@ -175,46 +187,49 @@ class StableFieldTests {
     D d2 = new D();
     assertThrows(IllegalStateException.class, () -> zField.applyAsDouble(d2));
   }
-  
+
   static class Boxed {
     int i;
     long j;
     double d;
   }
+
   @Test
   void testBoxedIntField() {
     Function<Boxed, Integer> iField = StableField.getter(lookup(), Boxed.class, "i", int.class);
     Boxed boxed = new Boxed();
-    assertEquals(0, (int)iField.apply(boxed));
+    assertEquals(0, (int) iField.apply(boxed));
     boxed.i = 3;
-    assertEquals(3, (int)iField.apply(boxed));
+    assertEquals(3, (int) iField.apply(boxed));
     boxed.i = 5;
-    assertEquals(3, (int)iField.apply(boxed));
+    assertEquals(3, (int) iField.apply(boxed));
     assertThrows(IllegalStateException.class, () -> iField.apply(new Boxed()));
   }
+
   @Test
   void testBoxedLongField() {
     Function<Boxed, Long> jField = StableField.getter(lookup(), Boxed.class, "j", long.class);
     Boxed boxed = new Boxed();
-    assertEquals(0L, (long)jField.apply(boxed));
+    assertEquals(0L, (long) jField.apply(boxed));
     boxed.j = 3L;
-    assertEquals(3L, (long)jField.apply(boxed));
+    assertEquals(3L, (long) jField.apply(boxed));
     boxed.j = 5L;
-    assertEquals(3L, (long)jField.apply(boxed));
+    assertEquals(3L, (long) jField.apply(boxed));
     assertThrows(IllegalStateException.class, () -> jField.apply(new Boxed()));
   }
+
   @Test
   void testBoxedDoubleField() {
     Function<Boxed, Double> dField = StableField.getter(lookup(), Boxed.class, "d", double.class);
     Boxed boxed = new Boxed();
-    assertEquals(0.0, (double)dField.apply(boxed));
+    assertEquals(0.0, (double) dField.apply(boxed));
     boxed.d = 3.0;
-    assertEquals(3.0, (double)dField.apply(boxed));
+    assertEquals(3.0, (double) dField.apply(boxed));
     boxed.d = 5.0;
-    assertEquals(3.0, (double)dField.apply(boxed));
+    assertEquals(3.0, (double) dField.apply(boxed));
     assertThrows(IllegalStateException.class, () -> dField.apply(new Boxed()));
   }
-  
+
   static class Prim {
     boolean z;
     byte b;
@@ -222,6 +237,7 @@ class StableFieldTests {
     short s;
     float f;
   }
+
   @Test
   void testPrimBooleanField() {
     Function<Prim, Boolean> zField = StableField.getter(lookup(), Prim.class, "z", boolean.class);
@@ -233,70 +249,85 @@ class StableFieldTests {
     assertTrue(zField.apply(prim));
     assertThrows(IllegalStateException.class, () -> zField.apply(new Prim()));
   }
+
   @Test
   void testPrimByteField() {
     Function<Prim, Byte> bField = StableField.getter(lookup(), Prim.class, "b", byte.class);
     Prim prim = new Prim();
-    assertEquals((byte)0, (byte)bField.apply(prim));
+    assertEquals((byte) 0, (byte) bField.apply(prim));
     prim.b = 10;
-    assertEquals((byte)10, (byte)bField.apply(prim));
+    assertEquals((byte) 10, (byte) bField.apply(prim));
     prim.b = 5;
-    assertEquals((byte)10, (byte)bField.apply(prim));
+    assertEquals((byte) 10, (byte) bField.apply(prim));
     assertThrows(IllegalStateException.class, () -> bField.apply(new Prim()));
   }
+
   @Test
   void testPrimCharField() {
     Function<Prim, Character> cField = StableField.getter(lookup(), Prim.class, "c", char.class);
     Prim prim = new Prim();
-    assertEquals((char)0, (char)cField.apply(prim));
+    assertEquals((char) 0, (char) cField.apply(prim));
     prim.c = 'A';
-    assertEquals('A', (char)cField.apply(prim));
+    assertEquals('A', (char) cField.apply(prim));
     prim.c = 'B';
-    assertEquals('A', (char)cField.apply(prim));
+    assertEquals('A', (char) cField.apply(prim));
     assertThrows(IllegalStateException.class, () -> cField.apply(new Prim()));
   }
+
   @Test
   void testPrimShortField() {
     Function<Prim, Short> sField = StableField.getter(lookup(), Prim.class, "s", short.class);
     Prim prim = new Prim();
-    assertEquals((short)0, (short)sField.apply(prim));
+    assertEquals((short) 0, (short) sField.apply(prim));
     prim.s = 1_000;
-    assertEquals((short)1_000, (short)sField.apply(prim));
+    assertEquals((short) 1_000, (short) sField.apply(prim));
     prim.s = 2_000;
-    assertEquals((short)1_000, (short)sField.apply(prim));
+    assertEquals((short) 1_000, (short) sField.apply(prim));
     assertThrows(IllegalStateException.class, () -> sField.apply(new Prim()));
   }
+
   @Test
   void testPrimFloatField() {
     Function<Prim, Float> fField = StableField.getter(lookup(), Prim.class, "f", float.class);
     Prim prim = new Prim();
-    assertEquals(0.0f, (float)fField.apply(prim));
+    assertEquals(0.0f, (float) fField.apply(prim));
     prim.f = 0.2f;
-    assertEquals(0.2f, (float)fField.apply(prim));
+    assertEquals(0.2f, (float) fField.apply(prim));
     prim.f = 0.4f;
-    assertEquals(0.2f, (float)fField.apply(prim));
+    assertEquals(0.2f, (float) fField.apply(prim));
     assertThrows(IllegalStateException.class, () -> fField.apply(new Prim()));
   }
-  
+
   @Test
   void testNoSuchField() {
-    assertThrows(NoSuchFieldError.class, () -> StableField.getter(lookup(), Object.class, "foo", String.class));
-    assertThrows(NoSuchFieldError.class, () -> StableField.intGetter(lookup(), Object.class, "foo"));
-    assertThrows(NoSuchFieldError.class, () -> StableField.longGetter(lookup(), Object.class, "foo"));
-    assertThrows(NoSuchFieldError.class, () -> StableField.doubleGetter(lookup(), Object.class, "foo"));
+    assertThrows(
+        NoSuchFieldError.class,
+        () -> StableField.getter(lookup(), Object.class, "foo", String.class));
+    assertThrows(
+        NoSuchFieldError.class, () -> StableField.intGetter(lookup(), Object.class, "foo"));
+    assertThrows(
+        NoSuchFieldError.class, () -> StableField.longGetter(lookup(), Object.class, "foo"));
+    assertThrows(
+        NoSuchFieldError.class, () -> StableField.doubleGetter(lookup(), Object.class, "foo"));
   }
-  
+
   private static class Foo {
     private @SuppressWarnings("unused") Object a;
     private @SuppressWarnings("unused") int b;
     private @SuppressWarnings("unused") long c;
     private @SuppressWarnings("unused") double d;
   }
+
   @Test
   void testNoAccess() {
-    assertThrows(IllegalAccessError.class, () -> StableField.getter(publicLookup(), Foo.class, "a", Object.class));
-    assertThrows(IllegalAccessError.class, () -> StableField.intGetter(publicLookup(), Foo.class, "b"));
-    assertThrows(IllegalAccessError.class, () -> StableField.longGetter(publicLookup(), Foo.class, "c"));
-    assertThrows(IllegalAccessError.class, () -> StableField.doubleGetter(publicLookup(), Foo.class, "d"));
+    assertThrows(
+        IllegalAccessError.class,
+        () -> StableField.getter(publicLookup(), Foo.class, "a", Object.class));
+    assertThrows(
+        IllegalAccessError.class, () -> StableField.intGetter(publicLookup(), Foo.class, "b"));
+    assertThrows(
+        IllegalAccessError.class, () -> StableField.longGetter(publicLookup(), Foo.class, "c"));
+    assertThrows(
+        IllegalAccessError.class, () -> StableField.doubleGetter(publicLookup(), Foo.class, "d"));
   }
 }

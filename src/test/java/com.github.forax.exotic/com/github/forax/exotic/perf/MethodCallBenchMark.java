@@ -3,9 +3,10 @@ package com.github.forax.exotic.perf;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.lang.invoke.MethodType.methodType;
 
+import com.github.forax.exotic.ConstantMemoizer;
+import com.github.forax.exotic.StructuralCall;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -20,9 +21,6 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import com.github.forax.exotic.ConstantMemoizer;
-import com.github.forax.exotic.StructuralCall;
-
 @SuppressWarnings("static-method")
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
@@ -31,23 +29,43 @@ import com.github.forax.exotic.StructuralCall;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @State(Scope.Benchmark)
 public class MethodCallBenchMark {
-  interface I { int f(); }
-  static class A implements I { @Override public int f() { return 1; }}
-  static class B implements I { @Override public int f() { return 1; }}
-  static class C implements I { @Override public int f() { return 1; }}
-  
-  private static final I[] ARRAY = new I[] { new A(), new B(), new C() };
-  
+  interface I {
+    int f();
+  }
+
+  static class A implements I {
+    @Override
+    public int f() {
+      return 1;
+    }
+  }
+
+  static class B implements I {
+    @Override
+    public int f() {
+      return 1;
+    }
+  }
+
+  static class C implements I {
+    @Override
+    public int f() {
+      return 1;
+    }
+  }
+
+  private static final I[] ARRAY = new I[] {new A(), new B(), new C()};
+
   private static final Function<I, Integer> MEMOIZER =
       ConstantMemoizer.memoizer(I::f, I.class, int.class);
-  
-  private final static StructuralCall STRUCTURAL_CALL =
+
+  private static final StructuralCall STRUCTURAL_CALL =
       StructuralCall.create(lookup(), "f", methodType(int.class));
-  
+
   @Benchmark
   public int virtual_call() {
     int sum = 0;
-    for(I i: ARRAY) {
+    for (I i : ARRAY) {
       sum += i.f();
     }
     return sum;
@@ -56,25 +74,23 @@ public class MethodCallBenchMark {
   @Benchmark
   public int memoizer() {
     int sum = 0;
-    for(I i: ARRAY) {
+    for (I i : ARRAY) {
       sum += MEMOIZER.apply(i);
     }
     return sum;
   }
-  
+
   @Benchmark
   public int structural_call() {
     int sum = 0;
-    for(I i: ARRAY) {
-      sum += (int)STRUCTURAL_CALL.invoke(i);
+    for (I i : ARRAY) {
+      sum += (int) STRUCTURAL_CALL.invoke(i);
     }
     return sum;
   }
-  
+
   public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(MethodCallBenchMark.class.getName())
-        .build();
+    Options opt = new OptionsBuilder().include(MethodCallBenchMark.class.getName()).build();
     new Runner(opt).run();
   }
 }
