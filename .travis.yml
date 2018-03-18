@@ -6,17 +6,9 @@ language: java
 before_install:
   - unset _JAVA_OPTIONS
 
-matrix:
-  include:
-    - env: PRO_VERSION='9'
-      install:
-        - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.9.181b/pro-9-b181b-linux.tar.gz
-        - tar -xzf pro-9-b181b-linux.tar.gz
-
-    - env: PRO_VERSION='10'
-      install:
-        - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz
-        - tar -xzf pro-10.46-linux.tar.gz
+install:
+  - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz
+  - tar -xzf pro-10.46-linux.tar.gz
 
 script:
   - ./pro/bin/pro version
