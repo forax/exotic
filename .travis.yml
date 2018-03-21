@@ -6,8 +6,6 @@ language: java
 before_install:
   - unset _JAVA_OPTIONS
 
--XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
-
 matrix:
   include:
     - env: PRO_VERSION='10'
