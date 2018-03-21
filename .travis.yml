@@ -17,7 +17,7 @@ matrix:
       install:
         - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz
         - tar -xzf pro-10.46-linux.tar.gz
-        - cp .travis/pro pro/bin/
+        - cp .travis/pro-graal pro/bin/pro
 
 script:
   - ./pro/bin/pro version
