@@ -16,28 +16,23 @@ resolver.
         "org.openjdk.jmh.generator=org.openjdk.jmh:jmh-generator-annprocess:1.20"
     ))
 
-formatter.
-    replace(true)
-
 compiler.
     rawArguments(list(
         "--processor-module-path", "deps"   // enable JMH annotation processor
     ))
 
 docer.
-    quiet(true).
-    link(uri("https://docs.oracle.com/javase/9/docs/api/"))
+    rawArguments(list(
+        "-quiet",
+        "-link", "https://docs.oracle.com/javase/9/docs/api/"))
    
 packager.
     moduleMetadata(list(
         "com.github.forax.exotic@1.0"
     ))   
     
-var cmdlineplugins = task(() -> {
-  // run command line defined plugins
-  pro.arguments().forEach(plugin -> run(plugin));   
-})    
-    
-run(resolver, modulefixer, formatter, compiler, tester, docer, packager, cmdlineplugins)
+run(resolver, modulefixer, compiler, tester, docer, packager)
+
+pro.arguments().forEach(plugin -> run(plugin))   // run command line defined plugins
 
 /exit
