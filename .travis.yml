@@ -6,9 +6,20 @@ language: java
 before_install:
   - unset _JAVA_OPTIONS
 
-install:
-  - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz
-  - tar -xzf pro-10.46-linux.tar.gz
+-XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler
+
+matrix:
+  include:
+    - env: PRO_VERSION='10'
+      install:
+        - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz
+        - tar -xzf pro-10.46-linux.tar.gz
+
+    - env: PRO_VERSION='10 Graal'
+      install:
+        - wget --no-check-certificate https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz
+        - tar -xzf pro-10.46-linux.tar.gz
+        - cp .travis/pro pro/bin/
 
 script:
   - ./pro/bin/pro version
