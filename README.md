@@ -74,7 +74,8 @@ static boolean isEmpty(Object o) {  // can be called with a Map, a Collection or
 
 ### Visitor - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/Visitor.html)
 
-Register a lambda for each class of an open hierarchy and adds inlining caches for intra-visitor calls.
+Having an open visitor, a visitor that do allow new types and new operations is not hard to implement,
+it's a Map that associates a class to a lambda, but this class make it effective by using inlining caches.
 
 ```java
 private static final Visitor&lt;Void, Integer&gt; VISITOR =
