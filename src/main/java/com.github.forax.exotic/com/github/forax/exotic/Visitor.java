@@ -1,9 +1,9 @@
 package com.github.forax.exotic;
 
 import static java.lang.invoke.MethodHandles.insertArguments;
-import static java.lang.invoke.MethodType.methodType;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -77,7 +77,7 @@ public interface Visitor<P, R> {
   }
   
   /**
-   * Registry that contains the association between a type and its corresponding computation as a @link {@link Visitlet}. 
+   * Registry that contains the association between a type and its corresponding computation as a {@link Visitlet}. 
    *
    * @param <P> the type of the parameter, can be Void if the parameter is null.
    * @param <R> the type of the return value.
@@ -113,6 +113,7 @@ public interface Visitor<P, R> {
     Objects.requireNonNull(consumer);
     HashMap<Class<?>, MethodHandle> map = new HashMap<>();
     
+    MethodType methodType = MethodType.methodType(rType, Object.class, pType);
     consumer.accept(new Registry<>() {
       @Override
       public <T> Registry<P, R> register(Class<T> type, Visitlet<? super T, ? super P, ? extends R> visitlet) {
@@ -121,13 +122,13 @@ public interface Visitor<P, R> {
         if (map.containsKey(type)) {
           throw new IllegalStateException("there is already a visitlet register for type " + type.getName());
         }
-        MethodHandle mh = insertArguments(VisitorCallSite.VISIT, 0, visitlet, VisitorCallSite.visitor(pType, rType, map))
-            .asType(methodType(rType, type, pType))
-            .asType(methodType(rType, Object.class, pType));
+        MethodHandle mh = insertArguments(VisitorCallSite.VISIT, 0, visitlet, VisitorCallSite.visitor(methodType, map))
+            .asType(methodType.changeParameterType(0, type))
+            .asType(methodType);
         map.put(type, mh);
         return this;
       }
     });
-    return VisitorCallSite.visitor(pType, rType, map);
+    return VisitorCallSite.visitor(methodType, map);
   }
 }
