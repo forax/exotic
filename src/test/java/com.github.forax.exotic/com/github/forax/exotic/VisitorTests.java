@@ -1,6 +1,8 @@
 package com.github.forax.exotic;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
 import java.util.List;
@@ -45,5 +47,36 @@ class VisitorTests {
         new Add(new Add(new Var("a"), new Value(10)), new Value(4))
         ));
     assertEquals(17, (int)visitor.visit(code, new Env()));
+  }
+  
+  @Test
+  void registerSameVisitletTwice() {
+    assertThrows(IllegalStateException.class, () ->
+        Visitor.create(Void.class, Void.class, opt -> opt
+            .register(String.class, (_1, _2, _3) -> null)
+            .register(String.class, (_1, _2, _3) -> null)
+            ));
+  }
+  
+  @Test
+  void visitCanNotFindAVisitlet() {
+    Visitor<Void,Void> visitor = Visitor.create(Void.class, Void.class, opt -> { /*empty*/ });
+    assertThrows(IllegalStateException.class, () ->
+        visitor.visit("oops", null));
+  }
+  
+  @Test
+  void nullWhenCreatingAVisitor() {
+    assertAll(
+        () -> assertThrows(NullPointerException.class, () -> Visitor.create(null, Void.class, opt -> { /*empty*/ })),
+        () -> assertThrows(NullPointerException.class, () -> Visitor.create(Void.class, null, opt -> { /*empty*/ })),
+        () -> assertThrows(NullPointerException.class, () -> Visitor.create(Void.class, Void.class, null))
+        );
+  }
+  
+  @Test
+  void nullWhenCallingVisit() {
+    Visitor<String, Void> visitor = Visitor.create(String.class, Void.class, opt -> { /*empty*/ });
+    assertThrows(NullPointerException.class, () -> visitor.visit(null, "hello"));
   }
 }
