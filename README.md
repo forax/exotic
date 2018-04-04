@@ -77,9 +77,10 @@ static boolean isEmpty(Object o) {  // can be called with a Map, a Collection or
 Register a lambda for each class of an open hierarchy and adds inlining caches for intra-visitor calls.
 
 ```java
-private static final Visitor&lt;Void, Integer&gt; VISITOR = Visitor.create(Void.class, int.class, opt -&gt; opt
-    .register(Value.class, (v, value, __) -&gt; value.value)
-    .register(Add.class,   (v, add, __)   -&gt; v.visit(add.left, null) + v.visit(add.right, null))
+private static final Visitor&lt;Void, Integer&gt; VISITOR =
+    Visitor.create(Void.class, int.class, opt -&gt; opt
+      .register(Value.class, (v, value, __) -&gt; value.value)
+      .register(Add.class,   (v, add, __)   -&gt; v.visit(add.left, null) + v.visit(add.right, null))
     );
   ...
   Expr expr = new Add(new Add(new Value(7), new Value(10)), new Value(4));
