@@ -21,7 +21,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import com.github.forax.exotic.Visitor;
 
-@SuppressWarnings("static-method")
 @Warmup(iterations = 5, time = 3, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 3, timeUnit = TimeUnit.SECONDS)
 @Fork(3)
