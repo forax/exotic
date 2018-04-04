@@ -72,6 +72,20 @@ static boolean isEmpty(Object o) {  // can be called with a Map, a Collection or
 }
 ```
 
+### Visitor - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/Visitor.html)
+
+Register a lambda for each class of an open hierarchy and adds inlining caches for intra-visitor calls.
+
+```java
+private static final Visitor&lt;Void, Integer&gt; VISITOR = Visitor.create(Void.class, int.class, opt -&gt; opt
+    .register(Value.class, (visitor, value, __) -&gt; value.value)
+    .register(Add.class,   (visitor, add, __)   -&gt; visitor.visit(add.left, null) + visitor.visit(add.right, null))
+    );
+  ...
+  Expr expr = new Add(new Add(new Value(7), new Value(10)), new Value(4));
+  int value = VISITOR.visit(expr, null);  // 21
+```
+
 
 ## Build Tool Integration [![](https://jitpack.io/v/forax/exotic.svg)](https://jitpack.io/#forax/exotic)
 
