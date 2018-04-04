@@ -9,9 +9,17 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
- * A visitor based on lambdas that tries hard to inline all intra-visitor calls. 
+ * A open visitor based on lambdas that tries hard to optimize all intra-visitor calls.
+ * 
+ * The visitor let you ({@link Registry#register(Class, Visitlet)}) a computation for any type you want
+ * (they do not have to have a root interface by example) and then when {@link Visitor#visit(Object, Object) visiting}
+ * the visitor, the right computation is called depending on the class of the expression.
+ * 
+ * The idea of the implementation is to send an object that has the same interface as the Visitor as first parameter of each lambda
+ * that implement an inlining cache specific for this lambda, thus mimicking the inlining caches that
+ * you naturally have when implementing the double-dispatch (the visitor pattern of the Gof).
  *
- * Let suppose we have the following AST (abstract syntax tree),
+ * Let suppose we have the following abstract syntax tree,
  * <pre>
  * interface Expr { }
  * class Value implements Expr { final int value; Value(int value) { this.value = value; }}
