@@ -29,6 +29,8 @@ class VisitorCallSite extends MutableCallSite {
       throw new AssertionError(e);
     }
   }
+  
+  private static final int MAX_DEPTH = 8;
 
   static <P, R> Visitor<P, R> visitor(Class<P> pType, Class<R> rType, HashMap<Class<?>, MethodHandle> map) {
     MethodHandle mh = new VisitorCallSite(MethodType.methodType(rType, Object.class, pType), map)
@@ -72,7 +74,7 @@ class VisitorCallSite extends MutableCallSite {
       throw new IllegalStateException("no visitlet register for type " + receiverClass.getName());
     }
     
-    if (depth == /*MAX_DEPTH*/ 10) {
+    if (depth == MAX_DEPTH) {
       callsite.setTarget(foldArguments(exactInvoker(type()), FIND.bindTo(map)));
     } else {
       MethodHandle guard = guardWithTest(TYPECHECK.bindTo(receiverClass),
