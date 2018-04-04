@@ -105,7 +105,7 @@ public interface Visitor<P, R> {
     Objects.requireNonNull(consumer);
     HashMap<Class<?>, MethodHandle> map = new HashMap<>();
     
-    class RegistryImpl implements Registry<P, R> {
+    consumer.accept(new Registry<>() {
       @Override
       public <T> Registry<P, R> register(Class<T> type, Visitlet<? super T, ? super P, ? extends R> visitlet) {
         Objects.requireNonNull(type);
@@ -119,8 +119,7 @@ public interface Visitor<P, R> {
         map.put(type, mh);
         return this;
       }
-    }
-    consumer.accept(new RegistryImpl());
+    });
     return VisitorCallSite.visitor(pType, rType, map);
   }
 }
