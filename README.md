@@ -82,9 +82,9 @@ private static final Visitor&lt;Void, Integer&gt; VISITOR =
       .register(Value.class, (v, value, __) -&gt; value.value)
       .register(Add.class,   (v, add, __)   -&gt; v.visit(add.left, null) + v.visit(add.right, null))
     );
-  ...
-  Expr expr = new Add(new Add(new Value(7), new Value(10)), new Value(4));
-  int value = VISITOR.visit(expr, null);  // 21
+...
+Expr expr = new Add(new Add(new Value(7), new Value(10)), new Value(4));
+int value = VISITOR.visit(expr, null);  // 21
 ```
 
 
