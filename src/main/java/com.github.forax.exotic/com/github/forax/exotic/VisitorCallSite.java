@@ -32,8 +32,8 @@ class VisitorCallSite extends MutableCallSite {
   
   private static final int MAX_DEPTH = 8;
 
-  static <P, R> Visitor<P, R> visitor(Class<P> pType, Class<R> rType, HashMap<Class<?>, MethodHandle> map) {
-    MethodHandle mh = new VisitorCallSite(MethodType.methodType(rType, Object.class, pType), map)
+  static <P, R> Visitor<P, R> visitor(MethodType methodType, HashMap<Class<?>, MethodHandle> map) {
+    MethodHandle mh = new VisitorCallSite(methodType, map)
         .dynamicInvoker()
         .asType(methodType(Object.class, Object.class, Object.class));
     return (expr, parameter) -> {
