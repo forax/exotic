@@ -28,7 +28,7 @@ docer.
    
 packager.
     moduleMetadata(list(
-        "com.github.forax.exotic@1.0"
+        "com.github.forax.exotic@1.1"
     ))   
     
 run(resolver, modulefixer, compiler, tester, docer, packager)
