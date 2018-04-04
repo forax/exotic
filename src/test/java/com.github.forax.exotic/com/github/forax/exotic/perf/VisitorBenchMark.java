@@ -3,6 +3,7 @@ package com.github.forax.exotic.perf;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -76,6 +77,20 @@ public class VisitorBenchMark {
     R visitBlock(Block block, P parameter);
   }
   
+  static class MapVisitor<P, R> {
+    private final HashMap<Class<?>, BiFunction<Object, P, R>> map = new HashMap<>();
+    
+    @SuppressWarnings("unchecked")
+    public <T> MapVisitor<P, R> register(Class<T> type, BiFunction<? super T, ? super P, ? extends R> fun) {
+      map.put(type, (BiFunction<Object, P, R>)fun);
+      return this;
+    }
+    
+    public R visit(Object expr, P parameter) {
+      return map.getOrDefault(expr.getClass(), (_1, _2) -> { throw new IllegalStateException(); }).apply(expr, parameter);
+    }
+  }
+  
   class Env {
     final HashMap<String, Integer> vars = new HashMap<>();
   }
@@ -97,7 +112,7 @@ public class VisitorBenchMark {
       .register(Add.class,    (v, add, env)    -> v.visit(add.left, env) + v.visit(add.right, env))
       .register(Var.class,    (v, var, env)    -> env.vars.getOrDefault(var.name, 0))
       .register(Assign.class, (v, assign, env) -> { int let = v.visit(assign.expr, env); env.vars.put(assign.name, let); return let; })
-      .register(Block.class,  (v, block, env)  -> block.exprs.stream().mapToInt(e -> v.visit(e, env)).reduce(0, (v1, v2) -> v2))
+      .register(Block.class,  (v, block, env)  -> { int result = 0; for(Expr expr: block.exprs) { result = v.visit(expr, env); } return result; })
       );
 
   private static final GofVisitor<Env, Integer> GOF_VISITOR = new GofVisitor<>() {
@@ -110,8 +125,23 @@ public class VisitorBenchMark {
     @Override
     public Integer visitAssign(Assign assign, Env env) { int let = assign.expr.accept(this, env); env.vars.put(assign.name, let); return let; }
     @Override
-    public Integer visitBlock(Block block, Env env) { return block.exprs.stream().mapToInt(e -> e.accept(this, env)).reduce(0, (v1, v2) -> v2); }
+    public Integer visitBlock(Block block, Env env) { int result = 0; for(Expr expr: block.exprs) { result = expr.accept(this, env); } return result; }
   };
+  
+  private static final MapVisitor<Env, Integer> MAP_VISITOR = new MapVisitor<>();
+  static {
+    MAP_VISITOR.register(Value.class,  (value, env)  -> value.value)
+        .register(Add.class,    (add, env)    -> MAP_VISITOR.visit(add.left, env) + MAP_VISITOR.visit(add.right, env))
+        .register(Var.class,    (var, env)    -> env.vars.getOrDefault(var.name, 0))
+        .register(Assign.class, (assign, env) -> { int let = MAP_VISITOR.visit(assign.expr, env); env.vars.put(assign.name, let); return let; })
+        .register(Block.class,  (block, env)  -> { int result = 0; for(Expr expr: block.exprs) { result = MAP_VISITOR.visit(expr, env); } return result; });
+  }
+     
+  
+  @Benchmark
+  public int gof_visitor() {
+    return MAP_VISITOR.visit(CODE, new Env());
+  }
   
   @Benchmark
   public int exotic_visitor() {
@@ -119,9 +149,10 @@ public class VisitorBenchMark {
   }
 
   @Benchmark
-  public int gof_visitor() {
+  public int map_visitor() {
     return CODE.accept(GOF_VISITOR, new Env());
   }
+  
 
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder().include(VisitorBenchMark.class.getName()).build();
