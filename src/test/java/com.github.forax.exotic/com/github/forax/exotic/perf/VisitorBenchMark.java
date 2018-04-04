@@ -139,7 +139,7 @@ public class VisitorBenchMark {
      
   
   @Benchmark
-  public int gof_visitor() {
+  public int map_visitor() {
     return MAP_VISITOR.visit(CODE, new Env());
   }
   
@@ -149,7 +149,7 @@ public class VisitorBenchMark {
   }
 
   @Benchmark
-  public int map_visitor() {
+  public int gof_visitor() {
     return CODE.accept(GOF_VISITOR, new Env());
   }
   
