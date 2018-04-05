@@ -74,8 +74,9 @@ static boolean isEmpty(Object o) {  // can be called with a Map, a Collection or
 
 ### Visitor - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/Visitor.html)
 
-Having an open visitor, a visitor that do allow new types and new operations is not hard to implement,
-it's a Map that associates a class to a lambda, but this class make it effective by using inlining caches.
+An open visitor, a visitor that does allow new types and new operations, can be implemented using a Map
+that associates a class to a lambda, but this implementation loose inlining thus perform badly compared to the Gof Visitor.
+This class implements an open visitor that's used inlining caches.
 
 ```java
 private static final Visitor&lt;Void, Integer&gt; VISITOR =
