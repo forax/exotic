@@ -79,7 +79,7 @@ that associates a class to a lambda, but this implementation loose inlining thus
 This class implements an open visitor that's used inlining caches.
 
 ```java
-private static final Visitor&lt;Void, Integer&gt; VISITOR =
+private static final Visitor<Void, Integer> VISITOR =
     Visitor.create(Void.class, int.class, opt -> opt
       .register(Value.class, (v, value, __) -> value.value)
       .register(Add.class,   (v, add, __)   -> v.visit(add.left, null) + v.visit(add.right, null))
