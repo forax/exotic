@@ -80,9 +80,9 @@ This class implements an open visitor that's used inlining caches.
 
 ```java
 private static final Visitor&lt;Void, Integer&gt; VISITOR =
-    Visitor.create(Void.class, int.class, opt -&gt; opt
-      .register(Value.class, (v, value, __) -&gt; value.value)
-      .register(Add.class,   (v, add, __)   -&gt; v.visit(add.left, null) + v.visit(add.right, null))
+    Visitor.create(Void.class, int.class, opt -> opt
+      .register(Value.class, (v, value, __) -> value.value)
+      .register(Add.class,   (v, add, __)   -> v.visit(add.left, null) + v.visit(add.right, null))
     );
 ...
 Expr expr = new Add(new Add(new Value(7), new Value(10)), new Value(4));
