@@ -64,7 +64,7 @@ MEMOIZER.applyAsInt("foo") // constant 3
 A method call that can call different method implementations if they share the same name and same parameter types.
 
 ```java
-private final static StructuralCall IS_EMPTY =
+private static final StructuralCall IS_EMPTY =
     StructuralCall.create(lookup(), "isEmpty", methodType(boolean.class));
 
 static boolean isEmpty(Object o) {  // can be called with a Map, a Collection or a String
