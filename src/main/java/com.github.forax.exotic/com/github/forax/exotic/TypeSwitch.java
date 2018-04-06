@@ -2,6 +2,7 @@ package com.github.forax.exotic;
 
 import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * A TypeSwitch allows to encode a switch on types as a plain old switch on integers.
@@ -100,7 +101,9 @@ public interface TypeSwitch {
     }
     HashMap<Class<?>, Class<?>> map = new HashMap<>();   //FIXME pre-size ??
     for (int i = length; --i >= 0;) {
-      validateType(map, typecases[i]);
+      Class<?> typecase = typecases[i];
+      Objects.requireNonNull(typecase);
+      validateType(map, typecase);
     }
   }
 
