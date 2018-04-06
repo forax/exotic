@@ -89,6 +89,28 @@ Expr expr = new Add(new Add(new Value(7), new Value(10)), new Value(4));
 int value = VISITOR.visit(expr, null);  // 21
 ```
 
+### TypeSwitch - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/TypeSwitch.html)
+
+Express a switch on type as function from an object to an index + a classical switch on the possible indexes.
+The TypeSwitch should be more efficient than a cascade of if instanceof.  
+
+```java
+private static final TypeSwitch TYPE_SWITCH = TypeSwitch.create(true, Integer.class, String.class);
+  
+public static String asString(Object o) {
+  switch(TYPE_SWITCH.typeSwitch(o)) {
+  case TypeSwitch.NULL_MATCH:
+    return "null";
+  case 0:
+    return "Integer";
+  case 1:
+    return "String";
+  default: // TypeSwitch.BAD_MATCH
+    return "unknown";
+  }
+}
+```
+
 
 ## Build Tool Integration [![](https://jitpack.io/v/forax/exotic.svg)](https://jitpack.io/#forax/exotic)
 

@@ -16,7 +16,7 @@ class TypeSwitchTests {
         () -> assertEquals(0, typeSwitch.typeSwitch(42)),
         () -> assertEquals(1, typeSwitch.typeSwitch("foo")),
         () -> assertEquals(1, typeSwitch.typeSwitch("bar")),
-        () -> assertEquals(TypeSwitch.BAD_MATCH, typeSwitch.typeSwitch(4.5))
+        () -> assertEquals(TypeSwitch.NO_MATCH, typeSwitch.typeSwitch(4.5))
       );
   }
   
@@ -42,7 +42,7 @@ class TypeSwitchTests {
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
-        () -> assertEquals(TypeSwitch.BAD_MATCH, typeSwitch.typeSwitch("bar"))
+        () -> assertEquals(TypeSwitch.NO_MATCH, typeSwitch.typeSwitch("bar"))
       );
   }
   
@@ -52,7 +52,7 @@ class TypeSwitchTests {
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
-        () -> assertEquals(TypeSwitch.BAD_MATCH, typeSwitch.typeSwitch("bar"))
+        () -> assertEquals(TypeSwitch.NO_MATCH, typeSwitch.typeSwitch("bar"))
       );
   }
   
@@ -68,7 +68,7 @@ class TypeSwitchTests {
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch("foo")),
         () -> assertEquals(TypeSwitch.NULL_MATCH, typeSwitch.typeSwitch(null)),
-        () -> assertEquals(TypeSwitch.BAD_MATCH, typeSwitch.typeSwitch(3))
+        () -> assertEquals(TypeSwitch.NO_MATCH, typeSwitch.typeSwitch(3))
       );
   }
   

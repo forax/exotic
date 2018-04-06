@@ -74,7 +74,7 @@ public class TypeSwitchBenchMark {
           if (o instanceof C) { value = 1; } else
             if (o instanceof B) { value = 2; } else
               if (o instanceof A) { value = 3; } else
-                  { value = TypeSwitch.BAD_MATCH; }
+                  { value = TypeSwitch.NO_MATCH; }
       sum += value;
     }
     return sum;
@@ -99,7 +99,7 @@ public class TypeSwitchBenchMark {
           if (o instanceof C) { value = 1; } else
             if (o instanceof B) { value = 2; } else
               if (o instanceof A) { value = 3; } else
-                  { value = TypeSwitch.BAD_MATCH; }
+                  { value = TypeSwitch.NO_MATCH; }
       sum += value;
     }
     return sum;
@@ -133,7 +133,7 @@ public class TypeSwitchBenchMark {
                             if (o instanceof LocalDate) { value = 10; } else
                               if (o instanceof Comparable) { value = 11; } else
                                 if (o instanceof Object) { value = 12; } else
-                                { value = TypeSwitch.BAD_MATCH; }
+                                { value = TypeSwitch.NO_MATCH; }
       sum += value;
     }
     return sum;

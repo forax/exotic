@@ -1,6 +1,6 @@
 package com.github.forax.exotic;
 
-import static com.github.forax.exotic.TypeSwitch.BAD_MATCH;
+import static com.github.forax.exotic.TypeSwitch.NO_MATCH;
 import static java.lang.invoke.MethodHandles.constant;
 import static java.lang.invoke.MethodHandles.dropArguments;
 import static java.lang.invoke.MethodHandles.guardWithTest;
@@ -30,11 +30,11 @@ class TypeSwitchCallSite extends MutableCallSite {
               return i;
             }
           }
-          return BAD_MATCH;
+          return NO_MATCH;
         }
         @Override
         public MethodHandle target() {
-          MethodHandle mh = dropArguments(constant(int.class, BAD_MATCH), 0, Object.class);  
+          MethodHandle mh = dropArguments(constant(int.class, NO_MATCH), 0, Object.class);  
           for(int i = refs.length; --i >= 0;) {
             Class<?> typecase = refs[i].get();
             if (typecase == null) {
@@ -85,15 +85,15 @@ class TypeSwitchCallSite extends MutableCallSite {
         }
 
         private Integer computeFromSupertypes(Class<?> type) {
-          int index = BAD_MATCH;
+          int index = NO_MATCH;
           Class<?> superclass = type.getSuperclass();
           if (superclass != null) {
             index = get(superclass);
           }
           for(Class<?> supertype: type.getInterfaces()) {
             int localIndex = get(supertype);
-            if (localIndex != BAD_MATCH) {
-              index = (index == BAD_MATCH)? localIndex: Math.min(index, localIndex);
+            if (localIndex != NO_MATCH) {
+              index = (index == NO_MATCH)? localIndex: Math.min(index, localIndex);
             }
           }
           return index;
