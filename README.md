@@ -105,7 +105,7 @@ public static String asString(Object o) {
     return "Integer";
   case 1:
     return "String";
-  default: // TypeSwitch.BAD_MATCH
+  default: // TypeSwitch.NO_MATCH
     return "unknown";
   }
 }
