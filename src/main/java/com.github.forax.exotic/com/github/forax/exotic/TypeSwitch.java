@@ -1,6 +1,7 @@
 package com.github.forax.exotic;
 
 import java.lang.invoke.MethodHandle;
+import java.util.HashMap;
 
 /**
  * A TypeSwitch allows to encode a switch on types as a plain old switch on integers.
@@ -81,6 +82,7 @@ public interface TypeSwitch {
    * @see TypeSwitch#typeSwitch(Object)
    */
   static TypeSwitch create(boolean nullMatch, Class<?>... typecases) {
+    validatePartialOrder(typecases);
     MethodHandle mh = TypeSwitchCallSite.wrapNullIfNecessary(nullMatch, TypeSwitchCallSite.create(typecases).dynamicInvoker());
     return value -> {
       try {
@@ -89,5 +91,41 @@ public interface TypeSwitch {
         throw Thrower.rethrow(t);
       }
     };
+  }
+  
+  private static void validatePartialOrder(Class<?>[] typecases) {
+    int length = typecases.length;
+    if (length == 0 || length == 1) {
+      return;
+    }
+    HashMap<Class<?>, Class<?>> map = new HashMap<>();   //FIXME pre-size ??
+    for (int i = length; --i >= 0;) {
+      validateType(map, typecases[i]);
+    }
+  }
+
+  private static void validateType(HashMap<Class<?>, Class<?>> map, Class<?> typecase) {
+    Class<?> conflictingCaseType = map.putIfAbsent(typecase, typecase);
+    if (conflictingCaseType != null) {
+      throw new IllegalStateException(
+          "Case " + conflictingCaseType.getName() + " matches a subtype of what case " +
+          typecase.getName() + " matches but is located after it");
+    }
+    validateSupertypes(map, typecase, typecase);
+  }
+
+  private static void validateSupertypes(HashMap<Class<?>, Class<?>> map, Class<?> type, Class<?> typecase) {
+    Class<?> superclass = type.getSuperclass();
+    if (superclass == null && type != Object.class) {
+      superclass = Object.class;  // interfaces are subtypes of Object
+    }
+    if (superclass != null && map.putIfAbsent(superclass, typecase) == null) {
+      validateSupertypes(map, superclass, typecase);
+    }
+    for (Class<?> superinterface : type.getInterfaces()) {
+      if (map.putIfAbsent(superinterface, typecase) == null) {
+        validateSupertypes(map, superinterface, typecase);
+      }
+    }
   }
 }

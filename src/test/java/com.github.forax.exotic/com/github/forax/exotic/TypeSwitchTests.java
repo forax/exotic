@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.Serializable;
+
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
@@ -77,6 +79,16 @@ class TypeSwitchTests {
     assertAll(
         () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(false, (Class<?>)null)),
         () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(true, (Class<?>)null))
+      );
+  }
+  
+  @Test
+  void invalidPartialOrder() {
+    assertAll(
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Object.class, String.class)),
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Comparable.class, String.class)),
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Object.class, Comparable.class)),
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Serializable.class, Comparable.class, String.class))
       );
   }
 }
