@@ -1,6 +1,7 @@
 package com.github.forax.exotic;
 
 import java.lang.invoke.MethodHandle;
+//import java.lang.invoke.MethodHandles.Lookup;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -82,9 +83,9 @@ public interface TypeSwitch {
    * 
    * @see TypeSwitch#typeSwitch(Object)
    */
-  static TypeSwitch create(boolean nullMatch, Class<?>... typecases) {
+  static TypeSwitch create(/*Lookup lookup,*/ boolean nullMatch, Class<?>... typecases) {
     validatePartialOrder(typecases);
-    MethodHandle mh = TypeSwitchCallSite.wrapNullIfNecessary(nullMatch, TypeSwitchCallSite.create(typecases).dynamicInvoker());
+    MethodHandle mh = TypeSwitchCallSite.wrapNullIfNecessary(nullMatch, TypeSwitchCallSite.create(/*lookup,*/ typecases).dynamicInvoker());
     return value -> {
       try {
         return (int)mh.invokeExact(value);  
