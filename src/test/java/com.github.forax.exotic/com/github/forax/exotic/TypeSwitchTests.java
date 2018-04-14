@@ -1,6 +1,5 @@
 package com.github.forax.exotic;
 
-//import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class TypeSwitchTests {
   @Test
   void simple() {
-    TypeSwitch typeSwitch = TypeSwitch.create(/*lookup(),*/ false, Integer.class, String.class);
+    TypeSwitch typeSwitch = TypeSwitch.create(false, Integer.class, String.class);
     assertAll( 
         () -> assertEquals(0, typeSwitch.typeSwitch(3)),
         () -> assertEquals(0, typeSwitch.typeSwitch(42)),
@@ -25,7 +24,7 @@ class TypeSwitchTests {
   
   @Test
   void inheritance() {
-    TypeSwitch typeSwitch = TypeSwitch.create(/*lookup(),*/ false, CharSequence.class, Object.class);
+    TypeSwitch typeSwitch = TypeSwitch.create(false, CharSequence.class, Object.class);
     assertAll(
         () -> assertEquals(1, typeSwitch.typeSwitch(3)),
         () -> assertEquals(1, typeSwitch.typeSwitch(42)),
@@ -41,7 +40,7 @@ class TypeSwitchTests {
   
   @Test
   void interfaces() {
-    TypeSwitch typeSwitch = TypeSwitch.create(/*lookup(),*/ false, I.class, J.class);
+    TypeSwitch typeSwitch = TypeSwitch.create(false, I.class, J.class);
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
@@ -51,7 +50,7 @@ class TypeSwitchTests {
   
   @Test
   void interfaces2() {
-    TypeSwitch typeSwitch = TypeSwitch.create(/*lookup(),*/ false, J.class, I.class);
+    TypeSwitch typeSwitch = TypeSwitch.create(false, J.class, I.class);
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
@@ -61,13 +60,13 @@ class TypeSwitchTests {
   
   @Test
   void nonNullSwitchCalledWithANull() {
-    TypeSwitch typeSwitch = TypeSwitch.create(/*lookup(),*/ false);
+    TypeSwitch typeSwitch = TypeSwitch.create(false);
     assertThrows(NullPointerException.class, () -> typeSwitch.typeSwitch(null));
   }
   
   @Test
   void nullCase() {
-    TypeSwitch typeSwitch = TypeSwitch.create(/*lookup(),*/ true, String.class);
+    TypeSwitch typeSwitch = TypeSwitch.create(true, String.class);
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch("foo")),
         () -> assertEquals(TypeSwitch.NULL_MATCH, typeSwitch.typeSwitch(null)),
@@ -78,18 +77,18 @@ class TypeSwitchTests {
   @Test
   void aCaseCanNotBeNull() {
     assertAll(
-        () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(/*lookup(),*/ false, (Class<?>)null)),
-        () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(/*lookup(),*/ true, (Class<?>)null))
+        () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(false, (Class<?>)null)),
+        () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(true, (Class<?>)null))
       );
   }
   
   @Test
   void invalidPartialOrder() {
     assertAll(
-        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(/*lookup(),*/ false, Object.class, String.class)),
-        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(/*lookup(),*/ false, Comparable.class, String.class)),
-        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(/*lookup(),*/ false, Object.class, Comparable.class)),
-        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(/*lookup(),*/ false, Serializable.class, Comparable.class, String.class))
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Object.class, String.class)),
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Comparable.class, String.class)),
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Object.class, Comparable.class)),
+        () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Serializable.class, Comparable.class, String.class))
       );
   }
 }

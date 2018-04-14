@@ -1,7 +1,6 @@
 package com.github.forax.exotic;
 
 import java.lang.invoke.MethodHandle;
-//import java.lang.invoke.MethodHandles.Lookup;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -13,7 +12,7 @@ import java.util.Objects;
  * The class inside the array must follow a partial order with the classes more specific (the subtypes) first
  * and classes less specific (the supertypes) after them.
  * 
- * An example of utilisation, instead of using a cascade of 'if instanceof'
+ * An example of usage, instead of using a cascade of 'if instanceof'
  * <pre>
  * public static String asString(Object o) {
  *   if (o == null) {
@@ -83,9 +82,9 @@ public interface TypeSwitch {
    * 
    * @see TypeSwitch#typeSwitch(Object)
    */
-  static TypeSwitch create(/*Lookup lookup,*/ boolean nullMatch, Class<?>... typecases) {
+  static TypeSwitch create(boolean nullMatch, Class<?>... typecases) {
     validatePartialOrder(typecases);
-    MethodHandle mh = TypeSwitchCallSite.wrapNullIfNecessary(nullMatch, TypeSwitchCallSite.create(/*lookup,*/ typecases).dynamicInvoker());
+    MethodHandle mh = TypeSwitchCallSite.wrapNullIfNecessary(nullMatch, TypeSwitchCallSite.create(typecases).dynamicInvoker());
     return value -> {
       try {
         return (int)mh.invokeExact(value);  

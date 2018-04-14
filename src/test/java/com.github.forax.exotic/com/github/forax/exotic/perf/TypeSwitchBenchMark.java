@@ -1,7 +1,5 @@
 package com.github.forax.exotic.perf;
 
-//import static java.lang.invoke.MethodHandles.lookup;
-
 import java.net.URI;
 import java.nio.CharBuffer;
 import java.time.LocalDate;
@@ -24,8 +22,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import com.github.forax.exotic.TypeSwitch;
 
-// FIXME, this class is not in com.github.forax.exotic.perf because defineAnonymousClass requires the class to be in the same package
-
 @SuppressWarnings("static-method")
 @Warmup(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 2, timeUnit = TimeUnit.SECONDS)
@@ -44,10 +40,10 @@ public class TypeSwitchBenchMark {
   static class E implements I { /* empty */ }
   static class F implements J { /* empty */ }
   
-  private static final TypeSwitch SMALL_TYPE_SWITCH = TypeSwitch.create(/*lookup(),*/ true,
+  private static final TypeSwitch SMALL_TYPE_SWITCH = TypeSwitch.create(true,
       D.class, C.class, B.class, A.class/*, J.class, I.class*/);
   
-  private static final TypeSwitch BIG_TYPE_SWITCH = TypeSwitch.create(/*lookup(),*/ true,
+  private static final TypeSwitch BIG_TYPE_SWITCH = TypeSwitch.create(true,
       D.class, C.class, B.class, A.class, J.class, I.class,
       String.class, StringBuilder.class, CharSequence.class, URI.class, LocalDate.class, Comparable.class, Object.class);
      

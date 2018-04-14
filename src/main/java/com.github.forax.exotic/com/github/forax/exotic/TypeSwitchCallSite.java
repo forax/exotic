@@ -12,17 +12,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 import java.lang.ref.WeakReference;
-//import java.lang.reflect.Field;
-//import java.util.Base64;
 import java.util.Objects;
-//import java.util.function.Predicate;
-
-//import sun.misc.Unsafe;
 
 class TypeSwitchCallSite extends MutableCallSite {
   private interface Strategy {
     int index(Class<?> receiverClass);
-    MethodHandle target(/*Lookup lookup*/);
+    MethodHandle target();
     
     static Strategy isInstance(Class<?>[] typecases) {
       WeakReference<Class<?>>[] refs = createRefArray(typecases);
@@ -38,14 +33,14 @@ class TypeSwitchCallSite extends MutableCallSite {
           return NO_MATCH;
         }
         @Override
-        public MethodHandle target(/*Lookup lookup*/) {
+        public MethodHandle target() {
           MethodHandle mh = dropArguments(constant(int.class, NO_MATCH), 0, Object.class);  
           for(int i = refs.length; --i >= 0;) {
             Class<?> typecase = refs[i].get();
             if (typecase == null) {
               continue;
             }
-            mh = guardWithTest(IS_INSTANCE.bindTo(typecase)/*PREDICATE_TEST.bindTo(createPredicateFromSpecies(lookup, typecase))*/,
+            mh = guardWithTest(IS_INSTANCE.bindTo(typecase),
                 dropArguments(constant(int.class, i), 0, Object.class),
                 mh);
           }
@@ -113,74 +108,10 @@ class TypeSwitchCallSite extends MutableCallSite {
     }
   }
   
-  /*public static class IsInstanceSpecies implements Predicate<Object> {
-    @Override
-    public boolean test(Object o) {
-      return o instanceof String;
-    }
-    
-    public static Predicate<Object> create() {
-      return new IsInstanceSpecies();
-    }
-  }
-  
-  static {
-    String name = '/' + IsInstanceSpecies.class.getName().replace('.', '/')+".class";
-    System.out.println(name);
-    java.io.InputStream input = IsInstanceSpecies.class.getResourceAsStream(name);
-    byte[] bytecode;
-    try {
-      bytecode = input.readAllBytes();
-    } catch (java.io.IOException e) {
-      throw new AssertionError(e);
-    }
-    String text = Base64.getEncoder().encodeToString(bytecode);
-    System.out.println(text);
-  }*/
-  
-  /*private static final byte[] ISINSTANCE_SPECIES_BYTECODE;
-  private static final Unsafe UNSAFE;
-  static {
-    String data = "yv66vgAAADUAIgcAAgEAPGNvbS9naXRodWIvZm9yYXgvZXhvdGljL1R5cGVTd2l0Y2hDYWxsU2l0ZSRJc0luc3RhbmNlU3BlY2llcwcABAEAEGphdmEvbGFuZy9PYmplY3QHAAYBABxqYXZhL3V0aWwvZnVuY3Rpb24vUHJlZGljYXRlAQAGPGluaXQ+AQADKClWAQAEQ29kZQoAAwALDAAHAAgBAA9MaW5lTnVtYmVyVGFibGUBABJMb2NhbFZhcmlhYmxlVGFibGUBAAR0aGlzAQA+TGNvbS9naXRodWIvZm9yYXgvZXhvdGljL1R5cGVTd2l0Y2hDYWxsU2l0ZSRJc0luc3RhbmNlU3BlY2llczsBAAR0ZXN0AQAVKExqYXZhL2xhbmcvT2JqZWN0OylaBwATAQAQamF2YS9sYW5nL1N0cmluZwEAAW8BABJMamF2YS9sYW5nL09iamVjdDsBAAZjcmVhdGUBACAoKUxqYXZhL3V0aWwvZnVuY3Rpb24vUHJlZGljYXRlOwEACVNpZ25hdHVyZQEANCgpTGphdmEvdXRpbC9mdW5jdGlvbi9QcmVkaWNhdGU8TGphdmEvbGFuZy9PYmplY3Q7PjsKAAEACwEAClNvdXJjZUZpbGUBABdUeXBlU3dpdGNoQ2FsbFNpdGUuamF2YQEARExqYXZhL2xhbmcvT2JqZWN0O0xqYXZhL3V0aWwvZnVuY3Rpb24vUHJlZGljYXRlPExqYXZhL2xhbmcvT2JqZWN0Oz47AQAMSW5uZXJDbGFzc2VzBwAgAQAqY29tL2dpdGh1Yi9mb3JheC9leG90aWMvVHlwZVN3aXRjaENhbGxTaXRlAQARSXNJbnN0YW5jZVNwZWNpZXMAIQABAAMAAQAFAAAAAwABAAcACAABAAkAAAAvAAEAAQAAAAUqtwAKsQAAAAIADAAAAAYAAQAAAHMADQAAAAwAAQAAAAUADgAPAAAAAQAQABEAAQAJAAAAOQABAAIAAAAFK8EAEqwAAAACAAwAAAAGAAEAAAB2AA0AAAAWAAIAAAAFAA4ADwAAAAAABQAUABUAAQAJABYAFwACABgAAAACABkACQAAACgAAgAAAAAACLsAAVm3ABqwAAAAAgAMAAAABgABAAAAegANAAAAAgAAAAMAGwAAAAIAHAAYAAAAAgAdAB4AAAAKAAEAAQAfACEACQ==";
-    ISINSTANCE_SPECIES_BYTECODE = Base64.getDecoder().decode(data);
-    
-    try {
-      Field field = Unsafe.class.getDeclaredField("theUnsafe");
-      field.setAccessible(true);
-      UNSAFE = (Unsafe)field.get(null);
-    } catch (NoSuchFieldException | IllegalAccessException | IllegalStateException e) {
-      throw new AssertionError(e);
-    }
-  }
-  
-  static Predicate<?> createPredicateFromSpecies(Lookup lookup, Class<?> clazz) {
-    MethodHandle mh = predicateFromSpecies(lookup, clazz);
-    try {
-      return (Predicate<?>)mh.invokeExact();
-    } catch(RuntimeException | Error e) {
-      throw e;
-    } catch (Throwable e) {
-      throw new AssertionError(e);
-    }
-  }
-  
-  private static MethodHandle predicateFromSpecies(Lookup lookup, Class<?> clazz) {
-    Class<?> lookupClass = lookup.lookupClass();
-    
-    Object[] patches = new Object[19];
-    patches[18] = clazz.getName().replace('.', '/');
-    
-    Class<?> anonymousClass = UNSAFE.defineAnonymousClass(lookupClass, ISINSTANCE_SPECIES_BYTECODE, patches);
-    try {
-      return lookup.findStatic(anonymousClass, "create", methodType(Predicate.class));
-    } catch (NoSuchMethodException | IllegalAccessException e) {
-      throw new AssertionError(e);
-    }
-  }*/
   
   private static final MethodType OBJECT_TO_INT = methodType(int.class, Object.class);
   private static final MethodHandle FALLBACK, TYPECHECK, NULLCHECK;
-  static final MethodHandle GET, IS_INSTANCE/*, PREDICATE_TEST*/;
+  static final MethodHandle GET, IS_INSTANCE;
   static {
     Lookup lookup = MethodHandles.lookup();
     try {
@@ -189,7 +120,6 @@ class TypeSwitchCallSite extends MutableCallSite {
       GET = lookup.findStatic(TypeSwitchCallSite.class, "get", methodType(int.class, ClassValue.class, Object.class));
       NULLCHECK = lookup.findStatic(Objects.class, "isNull", methodType(boolean.class, Object.class));
       IS_INSTANCE = lookup.findVirtual(Class.class, "isInstance", methodType(boolean.class, Object.class));
-      //PREDICATE_TEST = lookup.findVirtual(Predicate.class, "test", methodType(boolean.class, Object.class));
     } catch(NoSuchMethodException | IllegalAccessException e) {
       throw new AssertionError(e);
     }
@@ -198,37 +128,34 @@ class TypeSwitchCallSite extends MutableCallSite {
   private static final int MAX_DEPTH = 8;
   private static final int STRATEGY_CUT_OFF = 5;
   
-  //private final Lookup lookup;
   private final int depth;
   private final TypeSwitchCallSite callsite;
   private final Strategy strategy;
   
-  private TypeSwitchCallSite(/*Lookup lookup,*/ Strategy strategy) {
+  private TypeSwitchCallSite(Strategy strategy) {
     super(OBJECT_TO_INT);
     this.depth = 0;
     this.callsite = this;
-    //this.lookup = lookup;
     this.strategy = strategy;
     setTarget(FALLBACK.bindTo(this));
   }
   
-  private TypeSwitchCallSite(int depth, TypeSwitchCallSite callsite,/* Lookup lookup,*/ Strategy strategy) {
+  private TypeSwitchCallSite(int depth, TypeSwitchCallSite callsite, Strategy strategy) {
     super(OBJECT_TO_INT);
     this.depth = depth;
     this.callsite = callsite;
-    //this.lookup = lookup;
     this.strategy = strategy;
     setTarget(FALLBACK.bindTo(this));
   }
 
-  static TypeSwitchCallSite create(/*Lookup lookup,*/ Class<?>[] typecases) {
+  static TypeSwitchCallSite create(Class<?>[] typecases) {
     for(Class<?> typecase: typecases) {
       Objects.requireNonNull(typecase);
     }
     
     Strategy strategy = (typecases.length < STRATEGY_CUT_OFF)?
       Strategy.isInstance(typecases): Strategy.classValue(typecases);
-    return new TypeSwitchCallSite(/*lookup,*/ strategy);
+    return new TypeSwitchCallSite(strategy);
   }
   
   @SuppressWarnings("unused")
@@ -237,13 +164,13 @@ class TypeSwitchCallSite extends MutableCallSite {
     int index = strategy.index(receiverClass);
     
     if (depth == MAX_DEPTH) {
-      setTarget(strategy.target(/*lookup*/));
+      setTarget(strategy.target());
       return index;
     }
     
     setTarget(guardWithTest(TYPECHECK.bindTo(receiverClass),
         dropArguments(constant(int.class, index), 0, Object.class),
-        new TypeSwitchCallSite(depth + 1, callsite, /*lookup,*/ strategy).dynamicInvoker()));
+        new TypeSwitchCallSite(depth + 1, callsite, strategy).dynamicInvoker()));
     return index;
   }
   
