@@ -8,7 +8,7 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <pro.url>https://github.com/forax/pro/releases/download/v0.10%2B46/pro-10.46-linux.tar.gz</pro.url>
+    <pro.url>https://github.com/forax/pro/releases/download/0.10-17/pro-${os.detected.name}.zip</pro.url>
     
     <pro.artifact>${project.groupId}.${project.artifactId}-${project.version}.jar</pro.artifact>
     <pro.src.artifact>${project.groupId}.${project.artifactId}-source-${project.version}.jar</pro.src.artifact>
@@ -25,6 +25,13 @@
   </dependencies>
   
   <build>
+    <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.6.0</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -38,6 +45,28 @@
           <execution>
             <id>default-testCompile</id>
             <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>install-pro</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>pro</directory>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -113,6 +142,20 @@
               <goal>install-file</goal>
             </goals>
             <phase>install</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
