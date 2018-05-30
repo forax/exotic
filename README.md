@@ -1,5 +1,5 @@
 # exotic [![](https://api.travis-ci.org/forax/exotic.svg?branch=master)](https://travis-ci.org/forax/exotic)
-A bestiary of classes implementing exotic semantics in Java
+A bestiary of classes implementing exotic semantics in Java 8
 
 In Java, a static final field is considered as a constant by the virtual machine,
 but a final field of an object which is a constant is not itself considered as a constant.
