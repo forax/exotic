@@ -12,9 +12,48 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Objects;
 
 class TypeSwitchCallSite extends MutableCallSite {
+  static void validatePartialOrder(Class<?>[] typecases) {
+    int length = typecases.length;
+    if (length == 0 || length == 1) {
+      return;
+    }
+    HashMap<Class<?>, Class<?>> map = new HashMap<>();   //FIXME pre-size ??
+    for (int i = length; --i >= 0;) {
+      Class<?> typecase = typecases[i];
+      Objects.requireNonNull(typecase);
+      validateType(map, typecase);
+    }
+  }
+
+  private static void validateType(HashMap<Class<?>, Class<?>> map, Class<?> typecase) {
+    Class<?> conflictingCaseType = map.putIfAbsent(typecase, typecase);
+    if (conflictingCaseType != null) {
+      throw new IllegalStateException(
+          "Case " + conflictingCaseType.getName() + " matches a subtype of what case " +
+          typecase.getName() + " matches but is located after it");
+    }
+    validateSupertypes(map, typecase, typecase);
+  }
+
+  private static void validateSupertypes(HashMap<Class<?>, Class<?>> map, Class<?> type, Class<?> typecase) {
+    Class<?> superclass = type.getSuperclass();
+    if (superclass == null && type != Object.class) {
+      superclass = Object.class;  // interfaces are subtypes of Object
+    }
+    if (superclass != null && map.putIfAbsent(superclass, typecase) == null) {
+      validateSupertypes(map, superclass, typecase);
+    }
+    for (Class<?> superinterface : type.getInterfaces()) {
+      if (map.putIfAbsent(superinterface, typecase) == null) {
+        validateSupertypes(map, superinterface, typecase);
+      }
+    }
+  }
+  
   private interface Strategy {
     int index(Class<?> receiverClass);
     MethodHandle target();
@@ -61,51 +100,51 @@ class TypeSwitchCallSite extends MutableCallSite {
           return GET.bindTo(classValue);
         }
       };
+    } 
+  }
+  
+  static WeakReference<Class<?>>[] createRefArray(Class<?>[] typecases) {
+    @SuppressWarnings("unchecked")
+    WeakReference<Class<?>>[] refs = (WeakReference<Class<?>>[])new WeakReference<?>[typecases.length];
+    for(int i = 0; i < typecases.length; i++) {
+      refs[i] = new WeakReference<>(typecases[i]);
     }
-    
-    private static WeakReference<Class<?>>[] createRefArray(Class<?>[] typecases) {
-      @SuppressWarnings("unchecked")
-      WeakReference<Class<?>>[] refs = (WeakReference<Class<?>>[])new WeakReference<?>[typecases.length];
-      for(int i = 0; i < typecases.length; i++) {
-        refs[i] = new WeakReference<>(typecases[i]);
-      }
-      return refs;
-    }
-    
-    private static ClassValue<Integer> createClassValue(Class<?>[] typecases) {
-      ThreadLocal<Integer> local = new ThreadLocal<>();
-      ClassValue<Integer> classValue = new ClassValue<>() {
-        @Override
-        protected Integer computeValue(Class<?> type) {
-          Integer index = local.get();
-          if (index != null) {  // injection
-            return index;
-          }
-          return computeFromSupertypes(type);
-        }
-
-        private Integer computeFromSupertypes(Class<?> type) {
-          int index = NO_MATCH;
-          Class<?> superclass = type.getSuperclass();
-          if (superclass != null) {
-            index = get(superclass);
-          }
-          for(Class<?> supertype: type.getInterfaces()) {
-            int localIndex = get(supertype);
-            if (localIndex != NO_MATCH) {
-              index = (index == NO_MATCH)? localIndex: Math.min(index, localIndex);
-            }
-          }
+    return refs;
+  }
+  
+  static ClassValue<Integer> createClassValue(Class<?>[] typecases) {
+    ThreadLocal<Integer> local = new ThreadLocal<>();
+    ClassValue<Integer> classValue = new ClassValue<Integer>() {
+      @Override
+      protected Integer computeValue(Class<?> type) {
+        Integer index = local.get();
+        if (index != null) {  // injection
           return index;
         }
-      };
-      for(int i = 0; i < typecases.length; i++) {
-        local.set(i);  // inject value
-        classValue.get(typecases[i]);
+        return computeFromSupertypes(type);
       }
-      local.set(null);  // no injection anymore
-      return classValue;
+
+      private Integer computeFromSupertypes(Class<?> type) {
+        int index = NO_MATCH;
+        Class<?> superclass = type.getSuperclass();
+        if (superclass != null) {
+          index = get(superclass);
+        }
+        for(Class<?> supertype: type.getInterfaces()) {
+          int localIndex = get(supertype);
+          if (localIndex != NO_MATCH) {
+            index = (index == NO_MATCH)? localIndex: Math.min(index, localIndex);
+          }
+        }
+        return index;
+      }
+    };
+    for(int i = 0; i < typecases.length; i++) {
+      local.set(i);  // inject value
+      classValue.get(typecases[i]);
     }
+    local.set(null);  // no injection anymore
+    return classValue;
   }
   
   

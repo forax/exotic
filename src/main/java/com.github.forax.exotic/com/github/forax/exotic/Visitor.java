@@ -114,7 +114,7 @@ public interface Visitor<P, R> {
     HashMap<Class<?>, MethodHandle> map = new HashMap<>();
     
     MethodType methodType = MethodType.methodType(rType, Object.class, pType);
-    consumer.accept(new Registry<>() {
+    consumer.accept(new Registry<P, R>() {
       @Override
       public <T> Registry<P, R> register(Class<T> type, Visitlet<? super T, ? super P, ? extends R> visitlet) {
         Objects.requireNonNull(type);

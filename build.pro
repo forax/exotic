@@ -17,6 +17,8 @@ resolver.
     ))
 
 compiler.
+    sourceRelease(8).
+    testRelease(9).
     rawArguments(list(
         "--processor-module-path", "deps"   // enable JMH annotation processor
     ))
@@ -24,11 +26,11 @@ compiler.
 docer.
     rawArguments(list(
         "-quiet",
-        "-link", "https://docs.oracle.com/javase/9/docs/api/"))
+        "-link", "https://docs.oracle.com/javase/8/docs/api/"))
    
 packager.
     moduleMetadata(list(
-        "com.github.forax.exotic@1.2"
+        "com.github.forax.exotic@1.3"
     ))   
     
 run(resolver, modulefixer, compiler, tester, docer, packager)

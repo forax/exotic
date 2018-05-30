@@ -10,12 +10,12 @@ matrix:
   include:
     - env: PRO_VERSION='10'
       install:
-        - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-17/pro-linux.zip
+        - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-18/pro-linux.zip
         - unzip pro-linux.zip
 
     - env: PRO_VERSION='10 Graal'
       install:
-        - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-17/pro-linux.zip
+        - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-18/pro-linux.zip
         - unzip pro-linux.zip
         - cp .travis/pro-graal pro/bin/pro
 
