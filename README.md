@@ -1,11 +1,12 @@
 # exotic [![](https://api.travis-ci.org/forax/exotic.svg?branch=master)](https://travis-ci.org/forax/exotic)
-A bestiary of classes implementing exotic semantics in Java 8
+A bestiary of classes implementing exotic semantics in Java
 
 In Java, a static final field is considered as a constant by the virtual machine,
 but a final field of an object which is a constant is not itself considered as a constant.
 Exotic allows to see a constant's field as a constant, a result of a calculation as a constant,
 to change at runtime the value of a constant, etc. 
 
+This library requires Java 8+ and is fully compatible with Java 9 modules.
 
 ### MostlyConstant - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/MostlyConstant.html)
 
