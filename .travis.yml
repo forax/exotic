@@ -17,7 +17,8 @@ matrix:
       install:
         - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-18/pro-linux.zip
         - unzip pro-linux.zip
-        - sed -i.bak s/JLINK_VM_OPTIONS=/JLINK_VM_OPTIONS="-XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"/g ./pro/bin/pro
+        - sed -i.bak s/JLINK_VM_OPTIONS=/JLINK_VM_OPTIONS=\"-XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler\"/g ./pro/bin/pro
+        - cat ./pro/bin/pro
 
 script:
   - ./pro/bin/pro version
