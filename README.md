@@ -6,7 +6,9 @@ but a final field of an object which is a constant is not itself considered as a
 Exotic allows to see a constant's field as a constant, a result of a calculation as a constant,
 to change at runtime the value of a constant, etc. 
 
-This library requires Java 8+ and is fully compatible with Java 9 modules.
+This library run on Java 8+ and is fully compatible with Java 9 modules.
+
+This library can be build with Java 11+
 
 ### MostlyConstant - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/MostlyConstant.html)
 

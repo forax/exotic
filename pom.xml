@@ -8,7 +8,6 @@
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <pro.url>https://github.com/forax/pro/releases/download/0.10-18/pro-${os.detected.name}.zip</pro.url>
     
     <pro.artifact>${project.groupId}.${project.artifactId}-${project.version}.jar</pro.artifact>
     <pro.src.artifact>${project.groupId}.${project.artifactId}-source-${project.version}.jar</pro.src.artifact>
@@ -25,13 +24,6 @@
   </dependencies>
   
   <build>
-    <extensions>
-      <extension>
-        <groupId>kr.motd.maven</groupId>
-        <artifactId>os-maven-plugin</artifactId>
-        <version>1.6.0</version>
-      </extension>
-    </extensions>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -71,37 +63,21 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>com.googlecode.maven-download-plugin</groupId>
-        <artifactId>download-maven-plugin</artifactId>
-        <version>1.4.0</version>
-        <executions>
-          <execution>
-            <id>install-pro</id>
-            <phase>compile</phase>
-            <goals>
-              <goal>wget</goal>
-            </goals>
-            <configuration>
-              <url>${pro.url}</url>
-              <unpack>true</unpack>
-              <outputDirectory>${project.basedir}</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <version>1.6.0</version>
         <executions>
             <execution>
-                <id>call-pro</id>
+                <id>execute-pro</id>
                 <phase>compile</phase>
                 <goals>
                     <goal>exec</goal>
                 </goals>
                 <configuration>
-                    <executable>pro/bin/pro</executable>
+                    <executable>${java.home}/bin/java</executable>
+                    <arguments>
+                      <argument>pro_wrapper.java</argument>
+                    </arguments>
                 </configuration>                        
             </execution>
         </executions>
