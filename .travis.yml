@@ -1,6 +1,7 @@
 sudo: false
 dist: trusty
 language: java
+jdk: openjdk11
 
 # https://github.com/travis-ci/travis-ci/issues/8408
 before_install:
@@ -8,15 +9,13 @@ before_install:
 
 matrix:
   include:
-    - env: PRO_VERSION='10'
+    - env: PRO_VERSION='11'
       install:
-        - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-18/pro-linux.zip
-        - unzip pro-linux.zip
+        - java pro_wrapper.java version
 
-    - env: PRO_VERSION='10 Graal'
+    - env: PRO_VERSION='11 Graal'
       install:
-        - wget --no-check-certificate https://github.com/forax/pro/releases/download/0.10-18/pro-linux.zip
-        - unzip pro-linux.zip
+        - java pro_wrapper.java version
         - sed -i s/JLINK_VM_OPTIONS=/JLINK_VM_OPTIONS="\"-XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler\""/g ./pro/bin/pro
         - cat ./pro/bin/pro
 
