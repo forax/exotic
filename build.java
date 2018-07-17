@@ -1,5 +1,6 @@
 import static com.github.forax.pro.Pro.*;
 import static com.github.forax.pro.builder.Builders.*;
+import static java.lang.System.*;
 
 class build {
   public static void main(String[] args) {
@@ -37,5 +38,6 @@ class build {
 
     pro.arguments().forEach(plugin -> run(plugin));   // run command line defined plugins
     
+    exit(0);
   }
 }
