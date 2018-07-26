@@ -7,17 +7,12 @@ jdk: openjdk11
 before_install:
   - unset _JAVA_OPTIONS
 
-matrix:
-  include:
-    - env: PRO_VERSION='11'
-      install:
-        - java pro_wrapper.java version
+env:
+  - PRO_SPECIAL_BUILD='early-access'
+  - PRO_SPECIAL_BUILD=''
 
-    - env: PRO_VERSION='11 Graal'
-      install:
-        - java pro_wrapper.java version
-        - sed -i s/JLINK_VM_OPTIONS=/JLINK_VM_OPTIONS="\"-XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler\""/g ./pro/bin/pro
-        - cat ./pro/bin/pro
+install:
+  - java pro_wrapper.java version
 
 script:
   - ./pro/bin/pro version
