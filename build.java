@@ -38,6 +38,6 @@ run(resolver, modulefixer, compiler, tester, docer, packager);
 
 List.of(args).forEach(plugin -> run(plugin));   // run command line defined plugins
     
-System.exit(exitCode());
+System.exit(errorCode());
 
 }}
