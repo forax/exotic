@@ -16,5 +16,5 @@ install:
 
 script:
   - ./pro/bin/pro version
-  - java build.java
+  - ./pro/bin/java build.java
 
