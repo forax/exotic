@@ -26,7 +26,7 @@ compiler.
 
 docer.
   quiet(true).
-  link(uri("https://docs.oracle.com/javase/8/docs/api/"))
+  link(uri("https://docs.oracle.com/en/java/javase/11/docs/api/"))
 
 packager.
   modules("com.github.forax.exotic@1.3")   
