@@ -73,6 +73,7 @@ public final class MostlyConstant<T> {
   public void setAndDeoptimize(T constant) {
     MethodHandle target = constant(type, constant);
     callSite.setTarget(target.asType(callSite.type()));
+    MutableCallSite.syncAll(new MutableCallSite[] { callSite });
   }
 
   /**
