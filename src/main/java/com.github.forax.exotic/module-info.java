@@ -1,5 +1,5 @@
 module com.github.forax.exotic {
-  //requires jdk.unsupported;  // TypeSwitch can use sun.misc.Unsafe
+  requires jdk.unsupported;
   
   exports com.github.forax.exotic;
 }

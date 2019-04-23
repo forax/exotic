@@ -4,20 +4,19 @@ import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
-
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
 class ObjectSupportExampleTests {
   static final class Person {
-    private static final BiPredicate<Object, Object> EQUALS;
-    private static final ToIntFunction<Object> HASH_CODE;
+    private static final ObjectSupport SUPPORT;
     static {
-      ObjectSupport support = ObjectSupport.of(lookup(), "name", "age");
-      EQUALS = support.getEquals();
-      HASH_CODE = support.getHashCode();
+      try {
+        SUPPORT = ObjectSupport.of(lookup(), "name", "age");
+      } catch (Throwable e) {
+        e.printStackTrace();
+        throw e;
+      }
     }
     
     private final String name;
@@ -30,12 +29,12 @@ class ObjectSupportExampleTests {
     
     @Override
     public boolean equals(Object other) {
-      return EQUALS.test(this, other);
+      return SUPPORT.equals(this, other);
     }
     
     @Override
     public int hashCode() {
-      return HASH_CODE.applyAsInt(this);
+      return SUPPORT.hashCode(this);
     }
   }
   

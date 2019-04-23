@@ -12,26 +12,20 @@ import static java.lang.invoke.MethodHandles.publicLookup;
 import static java.lang.invoke.MethodType.methodType;
 import static java.lang.reflect.Modifier.isStatic;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.ToIntFunction;
 
-public class ObjectSupport {
-  private final Lookup lookup;
-  private final Field[] fields;
-  
-  private ObjectSupport(Lookup lookup, Field[] fields) {
-    this.lookup = lookup;
-    this.fields = fields;
-  }
-  
+public abstract class ObjectSupport {
   /**
    * Return an object support from a lookup object and some field names.
    * 
@@ -45,7 +39,7 @@ public class ObjectSupport {
     Class<?> lookupClass = lookup.lookupClass();
     requireFinalClass(lookupClass);
     requireNoInheritance(lookupClass);
-    return new ObjectSupport(lookup, findFields(lookup.lookupClass(), fieldNames));
+    return create(lookup, findFields(lookup.lookupClass(), fieldNames));
   }
   
   /**
@@ -61,51 +55,97 @@ public class ObjectSupport {
     Class<?> lookupClass = lookup.lookupClass();
     requireFinalClass(lookupClass);
     requireNoInheritance(lookupClass);
-    return new ObjectSupport(lookup, Arrays.stream(transformer.apply(lookup.lookupClass())).filter(f -> !isStatic(f.getModifiers())).toArray(Field[]::new));
+    return create(lookup, Arrays.stream(transformer.apply(lookup.lookupClass())).filter(f -> !isStatic(f.getModifiers())).toArray(Field[]::new));
+  }
+ 
+  
+  
+  private static final MethodHandle OBJECT_SUPPORT_FACTORY;
+  static {
+    Object unsafe;
+    Method defineAnonymousClass;
+    try {
+      Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+      Field unsafeField = unsafeClass.getDeclaredField("theUnsafe");
+      unsafeField.setAccessible(true);
+      defineAnonymousClass = unsafeClass.getMethod("defineAnonymousClass", Class.class, byte[].class, Object[].class);
+      unsafe = unsafeField.get(null);
+    } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException e) {
+      throw new AssertionError(e);
+    }
+    
+    byte[] data ;
+    try(InputStream input = ObjectSupportImpl.class.getResourceAsStream("/" + ObjectSupportImpl.class.getName().replace('.', '/') + ".class")) {
+      data = readAllBytes(input);
+    } catch(IOException e) {
+      throw new AssertionError(e);
+    }
+    
+    try {
+      Class<?> impl = (Class<?>)defineAnonymousClass.invoke(unsafe, ObjectSupport.class, data, null);
+      OBJECT_SUPPORT_FACTORY = lookup().findStatic(impl, "create", methodType(ObjectSupport.class, MethodHandle.class, MethodHandle.class));
+    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+      throw new AssertionError(e);
+    }
   }
   
-  /**
-   * Return a bi-predicate able to compare two instances by their fields.
-   * 
-   * The implementation is free to choose the order of the calls to {@link Object#equals(Object)} on the fields.
-   * 
-   * @return a bi predicate able to compare two instances.
-   */
-  public BiPredicate<Object, Object> getEquals() {
-    Class<?> lookupClass = lookup.lookupClass();
-    requireFinalClass(lookupClass);
-    requireNoInheritance(lookupClass);
+  private static byte[] readAllBytes(InputStream input) throws IOException {
+    byte[] buffer = new byte[8192];
+    int read;
+    int total = 0;
+    while((read = input.read(buffer, total, buffer.length - total)) != -1) {
+      total += read;
+      if (read == 0) {
+        buffer = Arrays.copyOf(buffer, buffer.length + 8192);
+      }
+    }
+    return Arrays.copyOf(buffer, total);
+  }
+  
+  private static ObjectSupport create(Lookup lookup, Field[] fields) {
+    MethodHandle equalsMH = createEqualsMH(lookup, fields);
+    MethodHandle hashCodeMH = createHashCodeMH(lookup, fields);
+    try {
+      return (ObjectSupport) OBJECT_SUPPORT_FACTORY.invokeExact(equalsMH, hashCodeMH);
+    } catch (Throwable e) {
+      throw Thrower.rethrow(e);
+    }
+  }
+  
+  public abstract boolean equals(Object self, Object other);
+  public abstract int hashCode(Object self);
+  
+  private static final class ObjectSupportImpl extends ObjectSupport {
+    private final MethodHandle equalsMH;
+    private final MethodHandle hashCodeMH;
     
-    MethodHandle mh = createEqualsMH(lookup, fields);
-    return (self, other) -> {
+    private ObjectSupportImpl(MethodHandle equalsMH, MethodHandle hashCodeMH) {
+      this.equalsMH = equalsMH;
+      this.hashCodeMH = hashCodeMH;
+    }
+    
+    @SuppressWarnings("unused")
+    public static ObjectSupport create(MethodHandle equalsMH, MethodHandle hashCodeMH) {
+      return new ObjectSupportImpl(equalsMH, hashCodeMH);
+    }
+
+    @Override
+    public boolean equals(Object self, Object other) {
       try {
-        return (boolean) mh.invokeExact(self, other);
+        return (boolean) equalsMH.invokeExact(self, other);
       } catch (Throwable e) {
         throw Thrower.rethrow(e);
       }
-    };
-  }
-  
-  /**
-   * Return a function able to compute the hash value of an instance.
-   * 
-   * The implementation is free to choose the order of the calls to {@link Object#hashCode()} on the fields.
-   * 
-   * @return a function able to compute the hash value of an instance.
-   */
-  public ToIntFunction<Object> getHashCode() {
-    Class<?> lookupClass = lookup.lookupClass();
-    requireFinalClass(lookupClass);
-    requireNoInheritance(lookupClass);
+    }
     
-    MethodHandle mh = createHashCodeMH(lookup, fields);
-    return self -> {
+    @Override
+    public int hashCode(Object self) {
       try {
-        return (int) mh.invokeExact(self);
+        return (int) hashCodeMH.invokeExact(self);
       } catch (Throwable e) {
         throw Thrower.rethrow(e);
       }
-    };
+    }
   }
   
   /*

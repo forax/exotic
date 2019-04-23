@@ -6,23 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
-
 import org.junit.jupiter.api.Test;
-
 
 
 @SuppressWarnings("static-method")
 class ObjectSupportTests {
   static final class Hello {
-    private static final BiPredicate<Object, Object> EQUALS;
-    private static final ToIntFunction<Object> HASH_CODE;
-    static {
-      ObjectSupport support = ObjectSupport.of(lookup(), "name");
-      EQUALS = support.getEquals();
-      HASH_CODE = support.getHashCode();
-    }
+    private static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), "name");
     
     private final String name;
 
@@ -32,12 +22,12 @@ class ObjectSupportTests {
     
     @Override
     public boolean equals(Object other) {
-      return EQUALS.test(this, other);
+      return SUPPORT.equals(this, other);
     }
     
     @Override
     public int hashCode() {
-      return HASH_CODE.applyAsInt(this);
+      return SUPPORT.hashCode(this);
     }
   }
   
@@ -57,13 +47,7 @@ class ObjectSupportTests {
   
   
   static final class Foo {
-    private static final BiPredicate<Object, Object> EQUALS;
-    private static final ToIntFunction<Object> HASH_CODE;
-    static {
-      ObjectSupport support = ObjectSupport.of(lookup(), "a", "b", "c", "d", "e", "f", "g", "h", "s", "o");
-      EQUALS = support.getEquals();
-      HASH_CODE = support.getHashCode();
-    }
+    private static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), "a", "b", "c", "d", "e", "f", "g", "h", "s", "o");
     
     boolean a;
     byte b;
@@ -78,12 +62,12 @@ class ObjectSupportTests {
     
     @Override
     public boolean equals(Object other) {
-      return EQUALS.test(this, other);
+      return SUPPORT.equals(this, other);
     }
     
     @Override
     public int hashCode() {
-      return HASH_CODE.applyAsInt(this);
+      return SUPPORT.hashCode(this);
     }
   }
   
@@ -284,22 +268,16 @@ class ObjectSupportTests {
   }
   
   static final class Empty {
-    static final BiPredicate<Object, Object> EQUALS;
-    static final ToIntFunction<Object> HASH_CODE;
-    static {
-      ObjectSupport support = ObjectSupport.of(lookup(), new String[0]);
-      EQUALS = support.getEquals();
-      HASH_CODE = support.getHashCode();
-    }
+    static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), new String[0]);
     
     @Override
     public boolean equals(Object other) {
-      return EQUALS.test(this, other);
+      return SUPPORT.equals(this, other);
     }
     
     @Override
     public int hashCode() {
-      return HASH_CODE.applyAsInt(this);
+      return SUPPORT.hashCode(this);
     }
   }
   
@@ -307,16 +285,16 @@ class ObjectSupportTests {
   @Test
   void testSelfEqualsContract() {
     assertAll(
-      () -> assertThrows(NullPointerException.class, () -> Empty.EQUALS.test(null, new Empty())),
-      () -> assertThrows(ClassCastException.class, () -> Empty.EQUALS.test(new Object(), null))
+      () -> assertThrows(NullPointerException.class, () -> Empty.SUPPORT.equals(null, new Empty())),
+      () -> assertThrows(ClassCastException.class, () -> Empty.SUPPORT.equals(new Object(), null))
       );
   }
   
   @Test
   void testSelfHashCodeContract() {
     assertAll(
-      () -> assertThrows(NullPointerException.class, () -> Empty.HASH_CODE.applyAsInt(null)),
-      () -> assertThrows(ClassCastException.class, () -> Empty.HASH_CODE.applyAsInt(new Object()))
+      () -> assertThrows(NullPointerException.class, () -> Empty.SUPPORT.hashCode(null)),
+      () -> assertThrows(ClassCastException.class, () -> Empty.SUPPORT.hashCode(new Object()))
       );
   }
 }

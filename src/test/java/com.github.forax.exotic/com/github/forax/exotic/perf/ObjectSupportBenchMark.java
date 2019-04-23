@@ -4,8 +4,6 @@ import static java.lang.invoke.MethodHandles.lookup;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -23,7 +21,6 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 import com.github.forax.exotic.ObjectSupport;
 
-
 @SuppressWarnings("static-method")
 @Warmup(iterations = 5, time = 3, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 3, timeUnit = TimeUnit.SECONDS)
@@ -33,13 +30,7 @@ import com.github.forax.exotic.ObjectSupport;
 @State(Scope.Benchmark)
 public class ObjectSupportBenchMark {
   static final class AutoPerson {
-    private static final BiPredicate<Object, Object> EQUALS;
-    private static final ToIntFunction<Object> HASH_CODE;
-    static {
-      ObjectSupport support = ObjectSupport.of(lookup(), "name", "age");
-      EQUALS = support.getEquals();
-      HASH_CODE = support.getHashCode();
-    }
+    private static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), "name", "age");
     
     private final String name;
     private final int age;
@@ -51,12 +42,12 @@ public class ObjectSupportBenchMark {
     
     @Override
     public boolean equals(Object other) {
-      return EQUALS.test(this, other);
+      return SUPPORT.equals(this, other);
     }
     
     @Override
     public int hashCode() {
-      return HASH_CODE.applyAsInt(this);
+      return SUPPORT.hashCode(this);
     }
   }
   
