@@ -20,11 +20,42 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 
+/**
+ * Provide a fast implementation for {@link Object#equals(Object)} and {@link Object#hashCode()}.
+ * <p>
+ * An {@code ObjectSupport} can be created either from a {@link Lookup} and a set of field names using
+ * {@link ObjectSupport#of(Lookup, String...)}
+ * or from a {@link Lookup} and a function providing the set of fields using
+ * {@link ObjectSupport#of(Lookup, Function)}.
+ * <p>
+ * The following example shows how to create and use a {@code ObjectSupport} configured
+ * to use the fields {@code name} and {@code age}.
+ * <pre>
+ * class Person {
+ *   private static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), "name", "age");
+ *  
+ *   private String name;
+ *   private int age;
+ *
+ *   public Person(String name, int age) {
+ *     this.name = name;
+ *     this.age = age;
+ *   }
+ *   
+ *   public boolean equals(Object other) {
+ *     return SUPPORT.equals(this, other);
+ *   }
+ *   
+ *   public int hashCode() {
+ *     return SUPPORT.hashCode(this);
+ *   }
+ * }
+ * </pre>
+ */
 public abstract class ObjectSupport {
   /**
    * Return an object support from a lookup object and some field names.
@@ -33,12 +64,8 @@ public abstract class ObjectSupport {
    * @param fieldNames names of the fields that will be use for the computations.
    * @return a new fresh object support.
    * @throws NullPointerException if {@code lookup} is null or the array of field is null.
-   * @throws IllegalStateException if the class of the lookup is not final or inherits a class other than Object.
    */
   public static ObjectSupport of(Lookup lookup, String... fieldNames) {
-    Class<?> lookupClass = lookup.lookupClass();
-    requireFinalClass(lookupClass);
-    requireNoInheritance(lookupClass);
     return create(lookup, findFields(lookup.lookupClass(), fieldNames));
   }
   
@@ -49,12 +76,8 @@ public abstract class ObjectSupport {
    * @param transformer a function that map the lookup class to the fields used for the subsequent computations.
    * @return a new fresh object support.
    * @throws NullPointerException if {@code lookup} is null or the array of field is null.
-   * @throws IllegalStateException if the class of the lookup is not final or inherits a class other than Object.
    */
   public static ObjectSupport of(Lookup lookup, Function<? super Class<?>, ? extends Field[]> transformer) {
-    Class<?> lookupClass = lookup.lookupClass();
-    requireFinalClass(lookupClass);
-    requireNoInheritance(lookupClass);
     return create(lookup, Arrays.stream(transformer.apply(lookup.lookupClass())).filter(f -> !isStatic(f.getModifiers())).toArray(Field[]::new));
   }
  
@@ -112,7 +135,29 @@ public abstract class ObjectSupport {
     }
   }
   
+  /**
+   * Test if two object are equals.
+   * 
+   * @param self an instance of the class used to create the current {@code ObjectSupport}.
+   * @param other any instance or null.
+   * @return true if the two objects are equals.
+   * @throws NullPointerException if {@code self} is null.
+   * @throws ClassCastException if {@code self} is not an instance of the class
+   *   used to create the current {@code ObjectSupport}.
+   * @see Object#equals(Object)
+   */
   public abstract boolean equals(Object self, Object other);
+  
+  /**
+   * Return a hash value of an instance of the class used to create the current {@code ObjectSupport}.
+   * 
+   * @param self an instance of the class used to create the current {@code ObjectSupport}.
+   * @return a hash value of {@code self}.
+   * @throws NullPointerException if {@code self} is null.
+   * @throws ClassCastException if {@code self} is not an instance of the class
+   *   used to create the current {@code ObjectSupport}.
+   * @see Object#hashCode()
+   */
   public abstract int hashCode(Object self);
   
   private static final class ObjectSupportImpl extends ObjectSupport {
@@ -248,17 +293,6 @@ public abstract class ObjectSupport {
     return target.asType(methodType(String.class, Object.class));
   }
   */
-  
-  private static void requireFinalClass(Class<?> lookupClass) {
-    if (!Modifier.isFinal(lookupClass.getModifiers())) {
-      throw new IllegalStateException("class " + lookupClass.getName() + " should be final");
-    }
-  }
-  private static void requireNoInheritance(Class<?> lookupClass) {
-    if (lookupClass.getSuperclass() != Object.class) {
-      throw new IllegalStateException("class " + lookupClass.getName() + " can not inherits a class");
-    }
-  }
   
   private static Field[] findFields(Class<?> lookupClass, String[] names) {
     Field[] fields = new Field[names.length];
