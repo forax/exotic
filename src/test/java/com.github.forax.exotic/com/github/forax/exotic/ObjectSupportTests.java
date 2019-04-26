@@ -6,14 +6,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 
 @SuppressWarnings("static-method")
 class ObjectSupportTests {
   static final class Hello {
-    private static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), "name");
+    private static final ObjectSupport<Hello> SUPPORT = ObjectSupport.of(lookup(), Hello.class, "name");
     
+    @SuppressWarnings("unused")
     private final String name;
 
     public Hello(String name) {
@@ -47,7 +55,7 @@ class ObjectSupportTests {
   
   
   static final class Foo {
-    private static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), "a", "b", "c", "d", "e", "f", "g", "h", "s", "o");
+    private static final ObjectSupport<Foo> SUPPORT = ObjectSupport.of(lookup(), Foo.class, "a", "b", "c", "d", "e", "f", "g", "h", "s", "o");
     
     boolean a;
     byte b;
@@ -268,7 +276,8 @@ class ObjectSupportTests {
   }
   
   static final class Empty {
-    static final ObjectSupport SUPPORT = ObjectSupport.of(lookup(), new String[0]);
+    @SuppressWarnings("unchecked")
+    static final ObjectSupport<Object> SUPPORT = ObjectSupport.of(lookup(), (Class<Object>)(Class<?>)Empty.class, new String[0]);
     
     @Override
     public boolean equals(Object other) {
@@ -296,5 +305,65 @@ class ObjectSupportTests {
       () -> assertThrows(NullPointerException.class, () -> Empty.SUPPORT.hashCode(null)),
       () -> assertThrows(ClassCastException.class, () -> Empty.SUPPORT.hashCode(new Object()))
       );
+  }
+  
+  @Target(ElementType.FIELD)
+  @Retention(RetentionPolicy.RUNTIME)
+  @interface ObjectSupportField {
+    // empty
+  }
+  
+  static Field[] findAnnotatedFields(Class<?> type) {
+    return Arrays.stream(type.getDeclaredFields()).filter(field -> field.isAnnotationPresent(ObjectSupportField.class)).toArray(Field[]::new);
+  }
+  
+  static class User {
+    private static final ObjectSupport<User> SUPPORT = ObjectSupport.of(lookup(), User.class, ObjectSupportTests::findAnnotatedFields);
+    
+    @ObjectSupportField
+    String name;
+    @ObjectSupportField
+    boolean vip;
+    
+    public User(String name, boolean vip) {
+      this.name = name;
+      this.vip = vip;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+      return SUPPORT.equals(this, other);
+    }
+    
+    @Override
+    public int hashCode() {
+      return SUPPORT.hashCode(this);
+    }
+  }
+  
+  @Test
+  void testEqualsUser() {
+    User user1 = new User("bob", true);
+    User user2 = new User("bob", true);
+    assertEquals(user1, user2);
+  }
+  @Test
+  void testNotEqualsUser() {
+    User user1 = new User("bob", true);
+    User user2 = new User("bob", false);
+    assertNotEquals(user1, user2);
+  }
+  
+  @Test
+  void testHashCodeUser() {
+    User user1 = new User("bob", true);
+    User user2 = new User("bob", true);
+    assertEquals(user1.hashCode(), user2.hashCode());
+  }
+  @Test
+  void testHashCodeNotEqualsUser() {
+    User user1 = new User("bob", true);
+    User user2 = new User("bob", false);
+    assertNotEquals(user1.hashCode(), user2.hashCode());
   }
 }

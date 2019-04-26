@@ -9,17 +9,19 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("static-method")
 class ObjectSupportExampleTests {
   static final class Person {
-    private static final ObjectSupport SUPPORT;
+    private static final ObjectSupport<Person> SUPPORT;
     static {
       try {
-        SUPPORT = ObjectSupport.of(lookup(), "name", "age");
+        SUPPORT = ObjectSupport.of(lookup(), Person.class, "name", "age");
       } catch (Throwable e) {
         e.printStackTrace();
         throw e;
       }
     }
     
+    @SuppressWarnings("unused")
     private final String name;
+    @SuppressWarnings("unused")
     private final int age;
 
     public Person(String name, int age) {
