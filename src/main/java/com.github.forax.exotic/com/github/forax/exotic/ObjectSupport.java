@@ -102,7 +102,7 @@ public interface ObjectSupport<T> {
    * @see ObjectSupport#of(Lookup, Class, ProjectionFunction...)
    */
   @FunctionalInterface
-  public interface ProjectionFunction<T, R> extends Function<T, R>, Serializable, ObjectSupportProjections.ProjectionDeserializer {
+  public interface ProjectionFunction<T, R> extends Function<T, R>, Serializable {
     // empty
   }
   

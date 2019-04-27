@@ -22,16 +22,6 @@ import java.util.function.BiConsumer;
 import com.github.forax.exotic.ObjectSupport.ProjectionFunction;
 
 class ObjectSupportProjections {
-  interface ProjectionDeserializer {
-    /**
-     * @param lookup a lookup on the class containing the lambda.
-     * @return the serialized lambda info of this lambda.
-     */
-    default SerializedLambda asSerializedLambda(Lookup lookup) {
-      return extractSeralizedLambda(this, lookup);
-    }
-  }
-  
   private static MethodHandle PRIVATE_LOOKUP_IN;
   static {
     Lookup lookup = publicLookup();
@@ -47,14 +37,14 @@ class ObjectSupportProjections {
     PRIVATE_LOOKUP_IN = privateLookupIn;
   }
   
-  static SerializedLambda extractSeralizedLambda(ProjectionDeserializer projectionDeserializer, Lookup lookup) {
-    Class<?> lambdaClass = projectionDeserializer.getClass();
+  private static SerializedLambda extractSeralizedLambda(ProjectionFunction<?,?> projectionFunction, Lookup lookup) {
+    Class<?> lambdaClass = projectionFunction.getClass();
     MethodHandle writeReplace = (PRIVATE_LOOKUP_IN == null)?
         findWriteReplaceJava8(lambdaClass, lookup):
         findWriteReplaceJava9(lambdaClass, lookup);
     
     try {
-      return (SerializedLambda)writeReplace.invoke(projectionDeserializer);
+      return (SerializedLambda)writeReplace.invoke(projectionFunction);
     } catch (Throwable e) {
       throw Thrower.rethrow(e);
     }
@@ -98,7 +88,7 @@ class ObjectSupportProjections {
     SerializedLambda[] serializedLambdas = new SerializedLambda[projections.length];
     for(int i = 0; i < serializedLambdas.length; i++) {
       try {
-        serializedLambdas[i] = projections[i].asSerializedLambda(lookup);
+        serializedLambdas[i] = extractSeralizedLambda(projections[i], lookup);
       } catch(IllegalArgumentException e) {
         throw new IllegalArgumentException("can not extract information from lambda at index " + i, e);
       }
