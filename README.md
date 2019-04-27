@@ -62,6 +62,28 @@ private static final ToIntFunction<Level> MEMOIZER =
 MEMOIZER.applyAsInt("foo") // constant 3
 ```
 
+### ObjectSupport - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/ObjectSupport.html) 
+
+Provide a fast implementation for equals() and hashCode().
+
+```java
+class Person {
+  private static final ObjectSupport<Person> SUPPORT =
+      ObjectSupport.of(lookup(), Person.class, p -> p.name);
+    
+  private String name;
+  ...
+  
+  public boolean equals(Object other) {
+    return SUPPORT.equals(this, other);
+  }
+    
+  public int hashCode() {
+    return SUPPORT.hashCode(this);
+  }
+}
+```
+
 ### StructuralCall - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StructuralCall.html)
 
 A method call that can call different method implementations if they share the same name and same parameter types.
