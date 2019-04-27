@@ -19,9 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import com.github.forax.exotic.ObjectSupport.ProjectionFunction;
-
-class ObjectSupportProjections {
+class ObjectSupportLambdas {
   private static MethodHandle PRIVATE_LOOKUP_IN;
   static {
     Lookup lookup = publicLookup();
@@ -37,7 +35,7 @@ class ObjectSupportProjections {
     PRIVATE_LOOKUP_IN = privateLookupIn;
   }
   
-  private static SerializedLambda extractSeralizedLambda(ProjectionFunction<?,?> projectionFunction, Lookup lookup) {
+  private static SerializedLambda extractSeralizedLambda(Object projectionFunction, Lookup lookup) {
     Class<?> lambdaClass = projectionFunction.getClass();
     MethodHandle writeReplace = (PRIVATE_LOOKUP_IN == null)?
         findWriteReplaceJava8(lambdaClass, lookup):
@@ -84,7 +82,7 @@ class ObjectSupportProjections {
   }
   
   
-  static String[] extractFieldNames(Lookup lookup, ProjectionFunction<?, ?>[] projections) {
+  static String[] extractFieldNames(Lookup lookup, Object[] projections) {
     SerializedLambda[] serializedLambdas = new SerializedLambda[projections.length];
     for(int i = 0; i < serializedLambdas.length; i++) {
       try {
@@ -113,7 +111,7 @@ class ObjectSupportProjections {
       byte[] data ;
       try(InputStream input = lookupClass.getResourceAsStream("/" + implClassName.replace('.', '/') + ".class")) {
         if (input == null) {
-          throw new IllegalArgumentException("can not access to bytecode of " + implClassName + " using lookup " + lookupClass.getName());
+          throw new IllegalArgumentException("can not access to the bytecode of " + implClassName + " using lookup " + lookupClass.getName());
         }
         
         data = readAllBytes(input);

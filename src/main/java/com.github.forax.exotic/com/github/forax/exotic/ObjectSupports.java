@@ -88,7 +88,7 @@ class ObjectSupports {
     requireNonNull(lookup);
     requireNonNull(type);
     requireNonNull(projections);
-    String[] fieldNames = ObjectSupportProjections.extractFieldNames(lookup, projections);
+    String[] fieldNames = ObjectSupportLambdas.extractFieldNames(lookup, projections);
     return create(lookup, findFields(type, fieldNames));
   }
   
