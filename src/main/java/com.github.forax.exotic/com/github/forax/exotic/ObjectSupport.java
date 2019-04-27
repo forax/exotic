@@ -9,15 +9,15 @@ import java.util.function.Function;
  * Provide a fast implementation for {@link Object#equals(Object)} and {@link Object#hashCode()}.
  * <p>
  * An {@code ObjectSupport} can be created either from a {@link Lookup}, the class containing the fields
- * and a set of field names using {@link ObjectSupport#of(Lookup, Class, String...)}
- * or from a {@link Lookup}, the class containing the fields and a function providing the set of fields using
- * {@link ObjectSupport#ofReflection(Lookup, Class, Function)}.
+ * and a set of lambdas accessing the fields using {@link ObjectSupport#of(Lookup, Class, ProjectionFunction...)}
+ * or from a {@link Lookup}, the class containing the fields and a set of field names using
+ * {@link ObjectSupport#of(Lookup, Class, String...)}.
  * <p>
  * The following example shows how to create and use a {@code ObjectSupport} configured
  * to use the fields {@code name} and {@code age}.
  * <pre>
  * class Person {
- *   private static final ObjectSupport&lt;Person&gt; SUPPORT = ObjectSupport.of(lookup(), Person.class, "name", "age");
+ *   private static final ObjectSupport&lt;Person&gt; SUPPORT = SUPPORT = ObjectSupport.of(lookup(), Person.class, p -&gt; p.name, p -&gt; p.age);
  *  
  *   private String name;
  *   private int age;
