@@ -9,15 +9,7 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("static-method")
 class ObjectSupportExampleTests {
   static final class Person {
-    private static final ObjectSupport<Person> SUPPORT;
-    static {
-      try {
-        SUPPORT = ObjectSupport.of(lookup(), Person.class, p -> p.name, p -> p.age);
-      } catch (Throwable e) {
-        e.printStackTrace();
-        throw e;
-      }
-    }
+    private static final ObjectSupport<Person> SUPPORT = ObjectSupport.of(lookup(), Person.class, p -> p.name, p -> p.age);
     
     private final String name;
     private final int age;
