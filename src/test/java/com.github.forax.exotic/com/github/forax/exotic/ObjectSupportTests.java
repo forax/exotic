@@ -318,7 +318,7 @@ class ObjectSupportTests {
   }
   
   static class User {
-    private static final ObjectSupport<User> SUPPORT = ObjectSupport.of(lookup(), User.class, ObjectSupportTests::findAnnotatedFields);
+    private static final ObjectSupport<User> SUPPORT = ObjectSupport.ofReflection(lookup(), User.class, ObjectSupportTests::findAnnotatedFields);
     
     @ObjectSupportField
     String name;
@@ -365,5 +365,91 @@ class ObjectSupportTests {
     User user1 = new User("bob", true);
     User user2 = new User("bob", false);
     assertNotEquals(user1.hashCode(), user2.hashCode());
+  }
+  
+  static class Point {
+    private static final ObjectSupport<Point> SUPPORT;
+    static {
+      try {
+        SUPPORT = ObjectSupport.of(lookup(), Point.class, p -> p.x, p -> p.y);
+      } catch(Throwable t) {
+        t.printStackTrace();
+        throw t;
+      }
+    }
+    
+    int x;
+    int y;
+    
+    public Point(int x, int y) {
+      this.x = x;
+      this.y = y;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+      return SUPPORT.equals(this, other);
+    }
+    @Override
+    public int hashCode() {
+      return SUPPORT.hashCode(this);
+    }
+  }
+  
+  @Test
+  void testEqualsPoint() {
+    Point p1 = new Point(1, 2);
+    Point p2 = new Point(1, 2);
+    assertEquals(p1, p2);
+  }
+  
+  @Test
+  void testHashCodePoint() {
+    Point p1 = new Point(1, 2);
+    Point p2 = new Point(1, 2);
+    assertEquals(p1.hashCode(), p2.hashCode());
+  }
+  
+  static class Color {
+    private static final ObjectSupport<Color> SUPPORT;
+    static {
+      try {
+        SUPPORT = ObjectSupport.of(lookup(), Color.class, c -> c.name, c -> c.light);
+      } catch(Throwable t) {
+        t.printStackTrace();
+        throw t;
+      }
+    }
+    
+    String name;
+    boolean light;
+    
+    public Color(String name, boolean light) {
+      this.name = name;
+      this.light = light;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+      return SUPPORT.equals(this, other);
+    }
+    @Override
+    public int hashCode() {
+      return SUPPORT.hashCode(this);
+    }
+  }
+  
+  @Test
+  void testEqualsColor() {
+    Color c1 = new Color("red", true);
+    Color c2 = new Color("red", true);
+    assertEquals(c1, c2);
+  }
+  
+  @Test
+  void testHashCodeColor() {
+    Color c1 = new Color("red", true);
+    Color c2 = new Color("red", true);
+    assertEquals(c1.hashCode(), c2.hashCode());
   }
 }

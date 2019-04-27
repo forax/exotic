@@ -1,5 +1,6 @@
 package com.github.forax.exotic;
 
+import java.io.Serializable;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
 import java.util.function.Function;
@@ -10,7 +11,7 @@ import java.util.function.Function;
  * An {@code ObjectSupport} can be created either from a {@link Lookup}, the class containing the fields
  * and a set of field names using {@link ObjectSupport#of(Lookup, Class, String...)}
  * or from a {@link Lookup}, the class containing the fields and a function providing the set of fields using
- * {@link ObjectSupport#of(Lookup, Class, Function)}.
+ * {@link ObjectSupport#ofReflection(Lookup, Class, Function)}.
  * <p>
  * The following example shows how to create and use a {@code ObjectSupport} configured
  * to use the fields {@code name} and {@code age}.
@@ -71,24 +72,54 @@ public interface ObjectSupport<T> {
    * @param lookup a lookup with enough access rights to see the class fields.
    * @param type the class containing the fields.
    * @param fieldNames names of the fields that will be use for the computations.
-   * @return a new fresh object support.
+   * @return a new fresh object support. This object should always be stored in a {@code static} {@code final} field.
    * @throws NullPointerException if {@code lookup} is null, {@code type} is null or the array of field is null.
    */
   public static <T> ObjectSupport<T> of(Lookup lookup, Class<T> type, String... fieldNames) {
-    return ObjectSupports.create(lookup, type, fieldNames);
+    return ObjectSupports.createUsingFieldNames(lookup, type, fieldNames);
   }
   
   /**
-   * Return an object support from a lookup object and some field names.
+   * Return an object support from a lookup object and a function that does reflection to find the fields.
    * 
    * @param <T> the type of the class.
    * @param lookup a lookup with enough access rights to see the class fields.
    * @param type the class containing the fields.
    * @param transformer a function that map the class to the fields used for the subsequent computations.
-   * @return a new fresh object support.
+   * @return a new fresh object support. This object should always be stored in a {@code static} {@code final} field.
    * @throws NullPointerException if {@code lookup} is null, {@code type} is null or {@code transformer} is null.
    */
-  public static <T> ObjectSupport<T> of(Lookup lookup, Class<T> type, Function<? super Class<T>, ? extends Field[]> transformer) {
-    return ObjectSupports.create(lookup, type, transformer);
+  public static <T> ObjectSupport<T> ofReflection(Lookup lookup, Class<T> type, Function<? super Class<T>, ? extends Field[]> transformer) {
+    return ObjectSupports.createUsingReflectFields(lookup, type, transformer);
+  }
+  
+  /**
+   * A function that retrieve the value of a field of the class.
+   *
+   * @param <T> type of the parameter.
+   * @param <R> type of the return value.
+   * 
+   * @see ObjectSupport#of(Lookup, Class, ProjectionFunction...)
+   */
+  @FunctionalInterface
+  public interface ProjectionFunction<T, R> extends Function<T, R>, Serializable, ObjectSupportProjections.ProjectionDeserializer {
+    // empty
+  }
+  
+  /**
+   * Return an object support from a lookup object and lambdas returning the fields.
+   * 
+   * @param <T> the type of the class.
+   * @param lookup a lookup with enough access rights to see the class fields.
+   * @param type the class containing the fields.
+   * @param projections lambdas that returns the value of a field of the class.
+   * @return a new fresh object support. This object should always be stored in a {@code static} {@code final} field.
+   * @throws NullPointerException if {@code lookup} is null, {@code type} is null or {@code transformer} is null.
+   * @throws IllegalArgumentException if the code of the lambdas is not accessible from the lookup object or
+   *   if one lambda doesn't do a field access.
+   */
+  @SafeVarargs
+  public static <T> ObjectSupport<T> of(Lookup lookup, Class<T> type, ProjectionFunction<? super T, ?>... projections) {
+    return ObjectSupports.createUsingLambdas(lookup, type, projections);
   }
 }

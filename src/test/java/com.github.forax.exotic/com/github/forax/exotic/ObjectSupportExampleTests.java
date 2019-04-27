@@ -12,16 +12,14 @@ class ObjectSupportExampleTests {
     private static final ObjectSupport<Person> SUPPORT;
     static {
       try {
-        SUPPORT = ObjectSupport.of(lookup(), Person.class, "name", "age");
+        SUPPORT = ObjectSupport.of(lookup(), Person.class, p -> p.name, p -> p.age);
       } catch (Throwable e) {
         e.printStackTrace();
         throw e;
       }
     }
     
-    @SuppressWarnings("unused")
     private final String name;
-    @SuppressWarnings("unused")
     private final int age;
 
     public Person(String name, int age) {

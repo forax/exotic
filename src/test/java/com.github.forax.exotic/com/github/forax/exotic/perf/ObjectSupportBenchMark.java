@@ -30,11 +30,9 @@ import com.github.forax.exotic.ObjectSupport;
 @State(Scope.Benchmark)
 public class ObjectSupportBenchMark {
   static final class AutoPerson {
-    private static final ObjectSupport<AutoPerson> SUPPORT = ObjectSupport.of(lookup(), AutoPerson.class, "name", "age");
+    private static final ObjectSupport<AutoPerson> SUPPORT = ObjectSupport.of(lookup(), AutoPerson.class, p -> p.name, p -> p.age);
     
-    @SuppressWarnings("unused")
     private final String name;
-    @SuppressWarnings("unused")
     private final int age;
 
     public AutoPerson(String name, int age) {

@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.github.forax.exotic.ObjectSupport.ProjectionFunction;
+
 class ObjectSupports {
   private static final MethodHandle OBJECT_SUPPORT_FACTORY;
   static {
@@ -68,18 +70,26 @@ class ObjectSupports {
     return Arrays.copyOf(buffer, total);
   }
   
-  static <T> ObjectSupport<T> create(Lookup lookup, Class<T> type, String... fieldNames) {
+  static <T> ObjectSupport<T> createUsingFieldNames(Lookup lookup, Class<T> type, String... fieldNames) {
     requireNonNull(lookup);
     requireNonNull(type);
     requireNonNull(fieldNames);
     return create(lookup, findFields(type, fieldNames));
   }
   
-  static <T> ObjectSupport<T> create(Lookup lookup, Class<T> type, Function<? super Class<T>, ? extends Field[]> transformer) {
+  static <T> ObjectSupport<T> createUsingReflectFields(Lookup lookup, Class<T> type, Function<? super Class<T>, ? extends Field[]> transformer) {
     requireNonNull(lookup);
     requireNonNull(type);
     requireNonNull(transformer);
     return create(lookup, Arrays.stream(transformer.apply(type)).filter(f -> !isStatic(f.getModifiers())).toArray(Field[]::new));
+  }
+  
+  static <T> ObjectSupport<T> createUsingLambdas(Lookup lookup, Class<T> type, ProjectionFunction<? super T, ?>[] projections) {
+    requireNonNull(lookup);
+    requireNonNull(type);
+    requireNonNull(projections);
+    String[] fieldNames = ObjectSupportProjections.extractFieldNames(lookup, projections);
+    return create(lookup, findFields(type, fieldNames));
   }
   
   private static <T> ObjectSupport<T> create(Lookup lookup, Field[] fields) {
