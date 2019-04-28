@@ -8,7 +8,7 @@ to change at runtime the value of a constant, etc.
 
 This library run on Java 8+ and is fully compatible with Java 9 modules.
 
-This library can be build with Java 11+
+This library needs Java 11+ to be built.
 
 ### MostlyConstant - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/MostlyConstant.html)
 
