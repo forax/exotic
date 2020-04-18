@@ -2,6 +2,8 @@ import static com.github.forax.pro.Pro.*;
 import static com.github.forax.pro.builder.Builders.*;
 import static java.lang.System.*;
 
+//pro.loglevel("verbose")
+
 resolver.
   dependencies(
     // JUnit 5
@@ -20,9 +22,7 @@ resolver.
 compiler.
   sourceRelease(8).
   testRelease(9).
-  rawArguments(
-    "--processor-module-path", "deps"   // enable JMH annotation processor
-    )
+  processorModuleTestPath(path("deps")) // enable JMH annotation processor
 
 docer.
   quiet(true).
