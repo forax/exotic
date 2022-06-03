@@ -1,6 +1,6 @@
 before_install:
   - sdk update
-  - sdk install java
+  - sdk install java java
   - sdk use java java
 install:
   - echo "Maven on Java 11"
