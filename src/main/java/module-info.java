@@ -1,5 +1,5 @@
 module com.github.forax.exotic {
-  requires jdk.unsupported;  // FIXME maybe optional ??
+  requires jdk.unsupported;
   
   exports com.github.forax.exotic;
 }
