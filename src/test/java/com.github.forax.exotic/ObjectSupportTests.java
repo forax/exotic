@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 
 @SuppressWarnings("static-method")
-class ObjectSupportTests {
+public class ObjectSupportTests {
   static final class Hello {
     private static final ObjectSupport<Hello> SUPPORT = ObjectSupport.of(lookup(), Hello.class, "name");
     
@@ -40,14 +40,14 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testEqualsHello() {
+  public void testEqualsHello() {
     Hello hello1 = new Hello(new String("bonjour"));
     Hello hello2 = new Hello(new String("bonjour"));
     assertEquals(hello1, hello2);
   }
   
   @Test
-  void testHashCodeHello() {
+  public void testHashCodeHello() {
     Hello hello = new Hello("ola");
     assertEquals(1 * 31 + "ola".hashCode(), hello.hashCode());
   }
@@ -80,14 +80,14 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testAllFieldsHashCode() {
+  public void testAllFieldsHashCode() {
     Foo foo1 = new Foo();
     Foo foo2 = new Foo();
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   
   @Test
-  void testAllFieldsHashCodeBoolean() {
+  public void testAllFieldsHashCodeBoolean() {
     Foo foo1 = new Foo();
     foo1.a = true;
     Foo foo2 = new Foo();
@@ -96,7 +96,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeByte() {
+  public void testAllFieldsHashCodeByte() {
     Foo foo1 = new Foo();
     foo1.b = 1;
     Foo foo2 = new Foo();
@@ -105,7 +105,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeShort() {
+  public void testAllFieldsHashCodeShort() {
     Foo foo1 = new Foo();
     foo1.c = 1;
     Foo foo2 = new Foo();
@@ -114,7 +114,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeChar() {
+  public void testAllFieldsHashCodeChar() {
     Foo foo1 = new Foo();
     foo1.d = 1;
     Foo foo2 = new Foo();
@@ -123,7 +123,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeInt() {
+  public void testAllFieldsHashCodeInt() {
     Foo foo1 = new Foo();
     foo1.e = 1;
     Foo foo2 = new Foo();
@@ -132,7 +132,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeLong() {
+  public void testAllFieldsHashCodeLong() {
     Foo foo1 = new Foo();
     foo1.f = 1;
     Foo foo2 = new Foo();
@@ -141,7 +141,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeFloat() {
+  public void testAllFieldsHashCodeFloat() {
     Foo foo1 = new Foo();
     foo1.g = 1;
     Foo foo2 = new Foo();
@@ -150,7 +150,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeDouble() {
+  public void testAllFieldsHashCodeDouble() {
     Foo foo1 = new Foo();
     foo1.h = 1;
     Foo foo2 = new Foo();
@@ -159,7 +159,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeString() {
+  public void testAllFieldsHashCodeString() {
     Foo foo1 = new Foo();
     foo1.s = new String("bar");
     Foo foo2 = new Foo();
@@ -168,7 +168,7 @@ class ObjectSupportTests {
     assertEquals(foo1.hashCode(), foo2.hashCode());
   }
   @Test
-  void testAllFieldsHashCodeObject() {
+  public void testAllFieldsHashCodeObject() {
     Foo foo1 = new Foo();
     foo1.o = Integer.valueOf(1500);
     Foo foo2 = new Foo();
@@ -178,14 +178,14 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testAllFieldsEquals() {
+  public void testAllFieldsEquals() {
     Foo foo1 = new Foo();
     Foo foo2 = new Foo();
     assertEquals(foo1, foo2);
   }
   
   @Test
-  void testAllFieldsEqualsBoolean() {
+  public void testAllFieldsEqualsBoolean() {
     Foo foo1 = new Foo();
     foo1.a = true;
     Foo foo2 = new Foo();
@@ -194,7 +194,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsByte() {
+  public void testAllFieldsEqualsByte() {
     Foo foo1 = new Foo();
     foo1.b = 1;
     Foo foo2 = new Foo();
@@ -203,7 +203,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsShort() {
+  public void testAllFieldsEqualsShort() {
     Foo foo1 = new Foo();
     foo1.c = 1;
     Foo foo2 = new Foo();
@@ -212,7 +212,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsChar() {
+  public void testAllFieldsEqualsChar() {
     Foo foo1 = new Foo();
     foo1.d = 1;
     Foo foo2 = new Foo();
@@ -221,7 +221,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsInt() {
+  public void testAllFieldsEqualsInt() {
     Foo foo1 = new Foo();
     foo1.e = 1;
     Foo foo2 = new Foo();
@@ -230,7 +230,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsLong() {
+  public void testAllFieldsEqualsLong() {
     Foo foo1 = new Foo();
     foo1.f = 1;
     Foo foo2 = new Foo();
@@ -239,7 +239,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsFloat() {
+  public void testAllFieldsEqualsFloat() {
     Foo foo1 = new Foo();
     foo1.g = 1;
     Foo foo2 = new Foo();
@@ -248,7 +248,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsDouble() {
+  public void testAllFieldsEqualsDouble() {
     Foo foo1 = new Foo();
     foo1.h = 1;
     Foo foo2 = new Foo();
@@ -257,7 +257,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsString() {
+  public void testAllFieldsEqualsString() {
     Foo foo1 = new Foo();
     foo1.s = new String("bar");
     Foo foo2 = new Foo();
@@ -266,7 +266,7 @@ class ObjectSupportTests {
     assertEquals(foo1, foo2);
   }
   @Test
-  void testAllFieldsEqualsObject() {
+  public void testAllFieldsEqualsObject() {
     Foo foo1 = new Foo();
     foo1.o = Integer.valueOf(1500);
     Foo foo2 = new Foo();
@@ -292,7 +292,7 @@ class ObjectSupportTests {
   
   
   @Test
-  void testSelfEqualsContract() {
+  public void testSelfEqualsContract() {
     assertAll(
       () -> assertThrows(NullPointerException.class, () -> Empty.SUPPORT.equals(null, new Empty())),
       () -> assertThrows(ClassCastException.class, () -> Empty.SUPPORT.equals(new Object(), null))
@@ -300,7 +300,7 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testSelfHashCodeContract() {
+  public void testSelfHashCodeContract() {
     assertAll(
       () -> assertThrows(NullPointerException.class, () -> Empty.SUPPORT.hashCode(null)),
       () -> assertThrows(ClassCastException.class, () -> Empty.SUPPORT.hashCode(new Object()))
@@ -342,26 +342,26 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testEqualsUser() {
+  public void testEqualsUser() {
     User user1 = new User("bob", true);
     User user2 = new User("bob", true);
     assertEquals(user1, user2);
   }
   @Test
-  void testNotEqualsUser() {
+  public void testNotEqualsUser() {
     User user1 = new User("bob", true);
     User user2 = new User("bob", false);
     assertNotEquals(user1, user2);
   }
   
   @Test
-  void testHashCodeUser() {
+  public void testHashCodeUser() {
     User user1 = new User("bob", true);
     User user2 = new User("bob", true);
     assertEquals(user1.hashCode(), user2.hashCode());
   }
   @Test
-  void testHashCodeNotEqualsUser() {
+  public void testHashCodeNotEqualsUser() {
     User user1 = new User("bob", true);
     User user2 = new User("bob", false);
     assertNotEquals(user1.hashCode(), user2.hashCode());
@@ -397,14 +397,14 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testEqualsPoint() {
+  public void testEqualsPoint() {
     Point p1 = new Point(1, 2);
     Point p2 = new Point(1, 2);
     assertEquals(p1, p2);
   }
   
   @Test
-  void testHashCodePoint() {
+  public void testHashCodePoint() {
     Point p1 = new Point(1, 2);
     Point p2 = new Point(1, 2);
     assertEquals(p1.hashCode(), p2.hashCode());
@@ -440,14 +440,14 @@ class ObjectSupportTests {
   }
   
   @Test
-  void testEqualsColor() {
+  public void testEqualsColor() {
     Color c1 = new Color("red", true);
     Color c2 = new Color("red", true);
     assertEquals(c1, c2);
   }
   
   @Test
-  void testHashCodeColor() {
+  public void testHashCodeColor() {
     Color c1 = new Color("red", true);
     Color c2 = new Color("red", true);
     assertEquals(c1.hashCode(), c2.hashCode());

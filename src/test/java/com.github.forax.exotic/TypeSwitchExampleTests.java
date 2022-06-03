@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class TypeSwitchExampleTests {
+public class TypeSwitchExampleTests {
   private static final TypeSwitch TYPE_SWITCH = TypeSwitch.create(true, Integer.class, String.class);
   
   public static String asString(Object o) {
@@ -22,7 +22,7 @@ class TypeSwitchExampleTests {
   }
   
   @Test
-  void example() {
+  public void example() {
     assertEquals("null", asString(null));
     assertEquals("Integer", asString(3));
     assertEquals("String", asString("foo"));

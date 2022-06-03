@@ -8,12 +8,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalTime;
 import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class StructuralCallTests {
+public class StructuralCallTests {
   @Test
-  void simple() {
+  public void simple() {
     StructuralCall call = StructuralCall.create(lookup(), "toString", methodType(String.class));
     assertEquals("mirror", call.invoke("mirror"));
     assertEquals("14", call.invoke(14));
@@ -21,7 +22,7 @@ class StructuralCallTests {
   }
 
   @Test
-  void comparable() {
+  public void comparable() {
     StructuralCall call =
         StructuralCall.create(lookup(), "compareTo", methodType(int.class, Object.class));
     assertEquals(0, (int) call.invoke("foo", "foo"));
@@ -30,7 +31,7 @@ class StructuralCallTests {
   }
 
   @Test
-  void wrongConfiguration() {
+  public void wrongConfiguration() {
     assertThrows(
         NullPointerException.class,
         () -> StructuralCall.create(null, "foo", methodType(void.class)));
@@ -40,18 +41,13 @@ class StructuralCallTests {
     assertThrows(NullPointerException.class, () -> StructuralCall.create(lookup(), "foo", null));
   }
 
-  static class NoAccess {
-    @SuppressWarnings("unused")
-    private String m(String s) {
-      return s;
-    }
-  }
+
 
   @Test
-  void cannotAccessToAPrivateMethod() {
+  public void cannotAccessToAPrivateMethod() {
     StructuralCall call =
         StructuralCall.create(lookup(), "m", methodType(String.class, String.class));
-    assertThrows(IllegalAccessError.class, () -> call.invoke(new NoAccess(), "test"));
+    assertThrows(IllegalAccessError.class, () -> call.invoke(new com.github.forax.exotic.noaccess.NoAccess(), "test"));
   }
 
   static class WrongLookup {
@@ -61,7 +57,7 @@ class StructuralCallTests {
   }
 
   @Test
-  void publicLookupCanNotAccessPackageMethod() {
+  public void publicLookupCanNotAccessPackageMethod() {
     StructuralCall call =
         StructuralCall.create(publicLookup(), "m", methodType(long.class, double.class));
     assertThrows(IllegalAccessError.class, () -> call.invoke(new WrongLookup(), 4.0));
@@ -72,14 +68,14 @@ class StructuralCallTests {
   }
 
   @Test
-  void noMethodDefined() {
+  public void noMethodDefined() {
     StructuralCall call =
         StructuralCall.create(lookup(), "m", methodType(String.class, String.class));
     assertThrows(NoSuchMethodError.class, () -> call.invoke(new NotFound(), "whereAreYou"));
   }
 
   @Test
-  void accessMethodThroughInterface() {
+  public void accessMethodThroughInterface() {
     StructuralCall call = StructuralCall.create(lookup(), "isEmpty", methodType(boolean.class));
     assertEquals(false, (boolean) call.invoke(List.of(1, 2, 3)));
   }
@@ -100,7 +96,7 @@ class StructuralCallTests {
   }
 
   @Test
-  void callingAMethodWithTheWrongClass() {
+  public void callingAMethodWithTheWrongClass() {
     WrongParameters wrongParameters = new WrongParameters();
     StructuralCall call1 =
         StructuralCall.create(lookup(), "m", methodType(void.class, boolean.class));
@@ -119,7 +115,7 @@ class StructuralCallTests {
   }
 
   @Test
-  void callingAMethodWithTheWrongNumberOfArguments() {
+  public void callingAMethodWithTheWrongNumberOfArguments() {
     WrongNumberOfArguments wrongNumberOfArguments = new WrongNumberOfArguments();
     StructuralCall call =
         StructuralCall.create(

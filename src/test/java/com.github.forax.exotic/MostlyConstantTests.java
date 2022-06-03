@@ -7,17 +7,18 @@ import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
+
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class MostlyConstantTests {
+public  class MostlyConstantTests {
   static class ObjectSandbox1 {
     static final MostlyConstant<String> VALUE = new MostlyConstant<>("hello", String.class);
     static final Supplier<String> VALUE_GETTER = VALUE.getter();
   }
 
   @Test
-  void testObjectSimpleChange() {
+  public void testObjectSimpleChange() {
     assertEquals("hello", ObjectSandbox1.VALUE_GETTER.get());
     ObjectSandbox1.VALUE.setAndDeoptimize("hell");
     assertEquals("hell", ObjectSandbox1.VALUE_GETTER.get());
@@ -29,7 +30,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testObjectSimpleChangeOptimized() {
+  public void testObjectSimpleChangeOptimized() {
     class Fake {
       String test() {
         return ObjectSandbox2.VALUE_GETTER.get();
@@ -52,7 +53,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testIntSimpleChange() {
+  public void testIntSimpleChange() {
     assertEquals(42, IntSandbox1.VALUE_GETTER.getAsInt());
     IntSandbox1.VALUE.setAndDeoptimize(43);
     assertEquals(43, IntSandbox1.VALUE_GETTER.getAsInt());
@@ -64,7 +65,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testIntSimpleChangeOptimized() {
+  public void testIntSimpleChangeOptimized() {
     class Fake {
       int test() {
         return IntSandbox2.VALUE_GETTER.getAsInt();
@@ -87,7 +88,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testLongSimpleChange() {
+  public void testLongSimpleChange() {
     assertEquals(42, LongSandbox1.VALUE_GETTER.getAsLong());
     LongSandbox1.VALUE.setAndDeoptimize(43L);
     assertEquals(43, LongSandbox1.VALUE_GETTER.getAsLong());
@@ -99,7 +100,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testLongSimpleChangeOptimized() {
+  public void testLongSimpleChangeOptimized() {
     class Fake {
       long test() {
         return LongSandbox2.VALUE_GETTER.getAsLong();
@@ -122,7 +123,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testDoubleSimpleChange() {
+  public void testDoubleSimpleChange() {
     assertEquals(42.0, DoubleSandbox1.VALUE_GETTER.getAsDouble());
     DoubleSandbox1.VALUE.setAndDeoptimize(43.0);
     assertEquals(43, DoubleSandbox1.VALUE_GETTER.getAsDouble());
@@ -134,7 +135,7 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testDoubleSimpleChangeOptimized() {
+  public void testDoubleSimpleChangeOptimized() {
     class Fake {
       double test() {
         return DoubleSandbox2.VALUE_GETTER.getAsDouble();
@@ -152,17 +153,17 @@ class MostlyConstantTests {
   }
 
   @Test
-  void testConstructorWithVoidType() {
+  public void testConstructorWithVoidType() {
     assertThrows(IllegalArgumentException.class, () -> new MostlyConstant<>(null, void.class));
   }
 
   @Test
-  void testConstructorWithNullType() {
+  public void testConstructorWithNullType() {
     assertThrows(NullPointerException.class, () -> new MostlyConstant<>(null, null));
   }
 
   @Test
-  void testSpecializedGettersWithWrapperTypes() {
+  public void testSpecializedGettersWithWrapperTypes() {
     assertThrows(
         IllegalStateException.class, () -> new MostlyConstant<>(0, Integer.class).intGetter());
     assertThrows(

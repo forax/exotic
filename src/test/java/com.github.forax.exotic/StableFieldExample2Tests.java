@@ -4,10 +4,11 @@ import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class StableFieldExample2Tests {
+public class StableFieldExample2Tests {
   enum Option {
     a,
     b;
@@ -28,7 +29,7 @@ class StableFieldExample2Tests {
   }
 
   @Test
-  void test() {
+  public void test() {
     assertEquals("A", Option.a.upperCase());
     assertEquals("B", Option.b.upperCase());
   }

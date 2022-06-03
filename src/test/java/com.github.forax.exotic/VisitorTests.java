@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class VisitorTests {
+public class VisitorTests {
   
   interface Expr { /**/ }
   static class Value implements Expr { final int value; Value(int value) { this.value = value; }}
@@ -20,7 +20,7 @@ class VisitorTests {
   static class Block implements Expr { final List<Expr> exprs; Block(List<Expr> exprs) { this.exprs = exprs; }}
   
   @Test
-  void simple() {
+  public void simple() {
     Visitor<Void, Integer> visitor = Visitor.create(Void.class, int.class, opt -> opt
         .register(Value.class, (v, value, __) -> value.value)
         .register(Add.class,   (v, add, __)   -> v.visit(add.left, null) + v.visit(add.right, null))
@@ -30,7 +30,7 @@ class VisitorTests {
   }
   
   @Test
-  void interpret() {
+  public void interpret() {
     class Env {
       final HashMap<String, Integer> vars = new HashMap<>();
     }
@@ -50,7 +50,7 @@ class VisitorTests {
   }
   
   @Test
-  void registerSameVisitletTwice() {
+  public void registerSameVisitletTwice() {
     assertThrows(IllegalStateException.class, () ->
         Visitor.create(Void.class, Void.class, opt -> opt
             .register(String.class, (_1, _2, _3) -> null)
@@ -59,14 +59,14 @@ class VisitorTests {
   }
   
   @Test
-  void visitCanNotFindAVisitlet() {
+  public void visitCanNotFindAVisitlet() {
     Visitor<Void,Void> visitor = Visitor.create(Void.class, Void.class, opt -> { /*empty*/ });
     assertThrows(IllegalStateException.class, () ->
         visitor.visit("oops", null));
   }
   
   @Test
-  void nullWhenCreatingAVisitor() {
+  public void nullWhenCreatingAVisitor() {
     assertAll(
         () -> assertThrows(NullPointerException.class, () -> Visitor.create(null, Void.class, opt -> { /*empty*/ })),
         () -> assertThrows(NullPointerException.class, () -> Visitor.create(Void.class, null, opt -> { /*empty*/ })),
@@ -75,7 +75,7 @@ class VisitorTests {
   }
   
   @Test
-  void nullWhenCallingVisit() {
+  public void nullWhenCallingVisit() {
     Visitor<String, Void> visitor = Visitor.create(String.class, Void.class, opt -> { /*empty*/ });
     assertThrows(NullPointerException.class, () -> visitor.visit(null, "hello"));
   }

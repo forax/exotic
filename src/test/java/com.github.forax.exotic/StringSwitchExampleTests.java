@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class StringSwitchExampleTests {
+public class StringSwitchExampleTests {
   private static final StringSwitch STRING_SWITCH = StringSwitch.create(true, "bernie the dog", "zara the cat");
   
   public static String owner(String s) {
@@ -22,7 +22,7 @@ class StringSwitchExampleTests {
   }
   
   @Test
-  void example() {
+  public void example() {
     assertEquals("no owner", owner(null));
     assertEquals("john", owner("bernie the dog"));
     assertEquals("jane", owner("zara the cat"));

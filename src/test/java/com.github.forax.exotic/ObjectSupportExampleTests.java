@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class ObjectSupportExampleTests {
+public class ObjectSupportExampleTests {
   static final class Person {
     private static final ObjectSupport<Person> SUPPORT = ObjectSupport.of(lookup(), Person.class, p -> p.name, p -> p.age);
     
@@ -31,7 +31,7 @@ class ObjectSupportExampleTests {
   }
   
   @Test
-  void testEqualsPerson() {
+  public void testEqualsPerson() {
     Person person1 = new Person("bob", 34);
     Person person2 = new Person("cathy", 27);
     Person person3 = new Person("bob", 34);
@@ -40,7 +40,7 @@ class ObjectSupportExampleTests {
   }
   
   @Test
-  void testHashCodePerson() {
+  public void testHashCodePerson() {
     Person person1 = new Person("cathy", 27);
     Person person2 = new Person("cathy", 27);
     assertEquals(person1.hashCode(), person2.hashCode());

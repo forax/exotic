@@ -4,10 +4,11 @@ import static java.lang.invoke.MethodHandles.lookup;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.ToIntFunction;
+
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class StableFieldExampleTests {
+public class StableFieldExampleTests {
   static class SystemInfo {
     static final ToIntFunction<SystemInfo> CPU_COUNT =
         StableField.intGetter(lookup(), SystemInfo.class, "cpuCount");
@@ -29,7 +30,7 @@ class StableFieldExampleTests {
   }
 
   @Test
-  void test() {
+  public void test() {
     assertTrue(SystemInfo.INSTANCE.getCpuCount() > 0);
   }
 }

@@ -7,9 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class StringSwitchTests {
+public class StringSwitchTests {
   @Test
-  void simple() {
+  public void simple() {
     StringSwitch stringSwitch = StringSwitch.create(false, "foo", "bar");
     assertAll( 
         () -> assertEquals(0, stringSwitch.stringSwitch("foo")),
@@ -21,13 +21,13 @@ class StringSwitchTests {
   }
   
   @Test
-  void nonNullSwitchCalledWithANull() {
+  public void nonNullSwitchCalledWithANull() {
     StringSwitch stringSwitch = StringSwitch.create(false);
     assertThrows(NullPointerException.class, () -> stringSwitch.stringSwitch(null));
   }
   
   @Test
-  void nullCase() {
+  public void nullCase() {
     StringSwitch stringSwitch = StringSwitch.create(true, "foo");
     assertAll(
         () -> assertEquals(0, stringSwitch.stringSwitch("foo")),
@@ -37,7 +37,7 @@ class StringSwitchTests {
   }
   
   @Test
-  void aCaseCanNotBeNull() {
+  public void aCaseCanNotBeNull() {
     assertAll(
         () -> assertThrows(NullPointerException.class, () -> StringSwitch.create(false, (String)null)),
         () -> assertThrows(NullPointerException.class, () -> StringSwitch.create(true, (String)null))
@@ -45,7 +45,7 @@ class StringSwitchTests {
   }
   
   @Test
-  void casesArrayCanNotBeNull() {
+  public void casesArrayCanNotBeNull() {
     assertThrows(NullPointerException.class, () -> StringSwitch.create(false, (String[])null));
   }
 }

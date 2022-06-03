@@ -1,6 +1,5 @@
 package com.github.forax.exotic;
 
-import static com.github.forax.exotic.TypeSwitch.NO_MATCH;
 import static java.lang.invoke.MethodHandles.constant;
 import static java.lang.invoke.MethodHandles.dropArguments;
 import static java.lang.invoke.MethodHandles.guardWithTest;
@@ -69,11 +68,11 @@ class TypeSwitchCallSite extends MutableCallSite {
               return i;
             }
           }
-          return NO_MATCH;
+          return TypeSwitch.NO_MATCH;
         }
         @Override
         public MethodHandle target() {
-          MethodHandle mh = dropArguments(constant(int.class, NO_MATCH), 0, Object.class);  
+          MethodHandle mh = dropArguments(constant(int.class, TypeSwitch.NO_MATCH), 0, Object.class);
           for(int i = refs.length; --i >= 0;) {
             Class<?> typecase = refs[i].get();
             if (typecase == null) {
@@ -125,15 +124,15 @@ class TypeSwitchCallSite extends MutableCallSite {
       }
 
       private Integer computeFromSupertypes(Class<?> type) {
-        int index = NO_MATCH;
+        int index = TypeSwitch.NO_MATCH;
         Class<?> superclass = type.getSuperclass();
         if (superclass != null) {
           index = get(superclass);
         }
         for(Class<?> supertype: type.getInterfaces()) {
           int localIndex = get(supertype);
-          if (localIndex != NO_MATCH) {
-            index = (index == NO_MATCH)? localIndex: Math.min(index, localIndex);
+          if (localIndex != TypeSwitch.NO_MATCH) {
+            index = (index == TypeSwitch.NO_MATCH)? localIndex: Math.min(index, localIndex);
           }
         }
         return index;

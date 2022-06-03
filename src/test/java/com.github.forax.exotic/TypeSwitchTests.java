@@ -9,9 +9,9 @@ import java.io.Serializable;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("static-method")
-class TypeSwitchTests {
+public class TypeSwitchTests {
   @Test
-  void simple() {
+  public void simple() {
     TypeSwitch typeSwitch = TypeSwitch.create(false, Integer.class, String.class);
     assertAll( 
         () -> assertEquals(0, typeSwitch.typeSwitch(3)),
@@ -23,7 +23,7 @@ class TypeSwitchTests {
   }
   
   @Test
-  void inheritance() {
+  public void inheritance() {
     TypeSwitch typeSwitch = TypeSwitch.create(false, CharSequence.class, Object.class);
     assertAll(
         () -> assertEquals(1, typeSwitch.typeSwitch(3)),
@@ -39,7 +39,7 @@ class TypeSwitchTests {
   class A implements I, J { /*empty*/ }
   
   @Test
-  void interfaces() {
+  public void interfaces() {
     TypeSwitch typeSwitch = TypeSwitch.create(false, I.class, J.class);
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
@@ -49,7 +49,7 @@ class TypeSwitchTests {
   }
   
   @Test
-  void interfaces2() {
+  public void interfaces2() {
     TypeSwitch typeSwitch = TypeSwitch.create(false, J.class, I.class);
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch(new A())),
@@ -59,13 +59,13 @@ class TypeSwitchTests {
   }
   
   @Test
-  void nonNullSwitchCalledWithANull() {
+  public void nonNullSwitchCalledWithANull() {
     TypeSwitch typeSwitch = TypeSwitch.create(false);
     assertThrows(NullPointerException.class, () -> typeSwitch.typeSwitch(null));
   }
   
   @Test
-  void nullCase() {
+  public void nullCase() {
     TypeSwitch typeSwitch = TypeSwitch.create(true, String.class);
     assertAll(
         () -> assertEquals(0, typeSwitch.typeSwitch("foo")),
@@ -75,7 +75,7 @@ class TypeSwitchTests {
   }
   
   @Test
-  void aCaseCanNotBeNull() {
+  public void aCaseCanNotBeNull() {
     assertAll(
         () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(false, (Class<?>)null)),
         () -> assertThrows(NullPointerException.class, () -> TypeSwitch.create(true, (Class<?>)null))
@@ -83,7 +83,7 @@ class TypeSwitchTests {
   }
   
   @Test
-  void invalidPartialOrder() {
+  public void invalidPartialOrder() {
     assertAll(
         () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Object.class, String.class)),
         () -> assertThrows(IllegalStateException.class, () -> TypeSwitch.create(false, Comparable.class, String.class)),

@@ -4,22 +4,25 @@
   
   <groupId>com.github.forax</groupId>
   <artifactId>exotic</artifactId>
-  <version>1.3</version>
+  <version>1.4</version>
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    
-    <pro.artifact>${project.groupId}.${project.artifactId}-${project.version}.jar</pro.artifact>
-    <pro.src.artifact>${project.groupId}.${project.artifactId}-source-${project.version}.jar</pro.src.artifact>
-    <pro.doc.artifact>${project.groupId}.${project.artifactId}-doc-${project.version}.jar</pro.doc.artifact>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>5.1.0</version>
+      <version>5.8.2</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.openjdk.jmh</groupId>
+      <artifactId>jmh-core</artifactId>
+      <version>1.35</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
   
@@ -28,109 +31,63 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.7.0</version>
+        <version>3.8.1</version>
         <executions>
           <execution>
             <id>default-compile</id>
-            <phase>none</phase>
+            <configuration>
+              <release>11</release>
+            </configuration>
           </execution>
-          <execution>
-            <id>default-testCompile</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-clean-plugin</artifactId>
-        <version>3.1.0</version>
-        <executions>
-          <execution>
-            <id>install-pro</id>
-            <phase>compile</phase>
+          <!-- execution>
+            <id>test-compile</id>
+            <phase>process-test-sources</phase>
             <goals>
-              <goal>clean</goal>
+              <goal>testCompile</goal>
             </goals>
             <configuration>
-              <filesets>
-                <fileset>
-                  <directory>pro</directory>
-                  <followSymlinks>false</followSymlinks>
-                </fileset>
-              </filesets>
+              <release>11</release>
+            </configuration>
+          </execution -->
+          <execution>
+            <id>base-compile</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <exclude>module-info.java</exclude>
+              </excludes>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.6.0</version>
-        <executions>
-            <execution>
-                <id>execute-pro</id>
-                <phase>compile</phase>
-                <goals>
-                    <goal>exec</goal>
-                </goals>
-                <configuration>
-                    <executable>${java.home}/bin/java</executable>
-                    <arguments>
-                      <argument>pro_wrapper.java</argument>
-                    </arguments>
-                </configuration>                        
-            </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <executions>
-          <execution>
-            <id>default-jar</id>
-            <phase>none</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
         <configuration>
-          <pomFile>${basedir}/pom.xml</pomFile>
-          <packaging>jar</packaging>
-          <file>${basedir}/target/main/artifact/${pro.artifact}</file>
-          <sources>${basedir}/target/main/artifact-src/${pro.src.artifact}</sources>
-          <javadoc>${basedir}/target/main/artifact-doc/${pro.doc.artifact}</javadoc>
-          <groupId>${project.groupId}</groupId>
-          <artifactId>${project.artifactId}</artifactId>
-          <version>${project.version}</version>
+          <release>8</release>
+          <testRelease>11</testRelease>
+          <jdkToolchain>
+            <version>11</version>
+          </jdkToolchain>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M5</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <sourcepath>src/main/java/</sourcepath>
+          <source>8</source>
         </configuration>
         <executions>
           <execution>
-            <id>default-install</id>
-            <phase>none</phase>
-          </execution>
-          <execution>
-            <id>install-pro</id>
+            <id>attach-javadocs</id>
             <goals>
-              <goal>install-file</goal>
-            </goals>
-            <phase>install</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>sign</goal>
+              <goal>jar</goal>
             </goals>
           </execution>
         </executions>
