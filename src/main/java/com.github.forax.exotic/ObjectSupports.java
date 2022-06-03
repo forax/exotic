@@ -16,8 +16,10 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,17 +32,31 @@ import com.github.forax.exotic.ObjectSupport.ProjectionFunction;
 class ObjectSupports {
   private static final MethodHandle OBJECT_SUPPORT_FACTORY;
   static {
-    Object unsafe;
-    Method defineAnonymousClass;
+    Object[] classOptions = null;
+    Method defineHiddenClass = null;
+    Object unsafe = null;
+    Method defineAnonymousClass = null;
     try {
-      Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-      Field unsafeField = unsafeClass.getDeclaredField("theUnsafe");
-      unsafeField.setAccessible(true);
-      defineAnonymousClass = unsafeClass.getMethod("defineAnonymousClass", Class.class, byte[].class, Object[].class);
-      unsafe = unsafeField.get(null);
-    } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException e) {
-      throw new AssertionError(e);
+      // check defineHiddenClass (Java 15+)
+      Class<?> classOptionClass = Class.forName("java.lang.invoke.MethodHandles$Lookup$ClassOption");
+      classOptions = (Object[]) Array.newInstance(classOptionClass, 2);
+      classOptions[0] = classOptionClass.getField("NESTMATE").get(null);
+      classOptions[1] = classOptionClass.getField("STRONG").get(null);
+      defineHiddenClass = Lookup.class.getMethod("defineHiddenClass", byte[].class, boolean.class, classOptions.getClass());
+    } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
+      // check if Unsafe is available and use defineAnonymousClass (Java < 15)
+      Class<?> unsafeClass;
+      try {
+        unsafeClass = Class.forName("sun.misc.Unsafe");
+        Field unsafeField = unsafeClass.getDeclaredField("theUnsafe");
+        unsafeField.setAccessible(true);
+        defineAnonymousClass = unsafeClass.getMethod("defineAnonymousClass", Class.class, byte[].class, Object[].class);
+        unsafe = unsafeField.get(null);
+      } catch (ClassNotFoundException | NoSuchFieldException | NoSuchMethodException | IllegalAccessException e2) {
+        throw new AssertionError(e2);
+      }
     }
+
     
     byte[] data ;
     try(InputStream input = ObjectSupportImpl.class.getResourceAsStream("/" + ObjectSupportImpl.class.getName().replace('.', '/') + ".class")) {
@@ -50,8 +66,15 @@ class ObjectSupports {
     }
     
     try {
-      Class<?> impl = (Class<?>)defineAnonymousClass.invoke(unsafe, ObjectSupport.class, data, null);
-      OBJECT_SUPPORT_FACTORY = lookup().findStatic(impl, "create", methodType(ObjectSupport.class, MethodHandle.class, MethodHandle.class));
+      Lookup lookup = MethodHandles.lookup();
+      Class<?> impl;
+      if (defineHiddenClass != null) {
+        lookup = (Lookup) defineHiddenClass.invoke(lookup, data, true, classOptions);
+        impl = lookup.lookupClass();
+      } else {
+        impl = (Class<?>) defineAnonymousClass.invoke(unsafe, ObjectSupport.class, data, null);
+      }
+      OBJECT_SUPPORT_FACTORY = lookup.findStatic(impl, "create", methodType(ObjectSupport.class, MethodHandle.class, MethodHandle.class));
     } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
       throw new AssertionError(e);
     }
