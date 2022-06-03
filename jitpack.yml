@@ -3,6 +3,8 @@ before_install:
   - sdk install java
   - sdk default java
   - sdk install maven
+  - export JAVA_HOME=`which java`
+  - echo $JAVA_HOME
 install:
   - mvn --version
   - mvn install -DskipTests
