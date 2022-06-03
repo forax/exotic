@@ -1,4 +1,5 @@
 before_install:
+  - sdk update
   - sdk install java
   - sdk use java java
 install:
