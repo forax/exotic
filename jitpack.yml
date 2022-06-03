@@ -1,0 +1,6 @@
+before_install:
+  - sdk install java 11-zulu
+  - sdk use java java 11-zulu
+install:
+  - echo "Maven on Java 11"
+  - mvn install -DskipTests
