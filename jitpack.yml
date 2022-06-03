@@ -1,5 +1,5 @@
 before_install:
-  - sdk selfupdate force
+  - sdk update
   - sdk install java
   - sdk default java
   - sdk install maven
