@@ -35,7 +35,7 @@ class ObjectSupportLambdas {
     PRIVATE_LOOKUP_IN = privateLookupIn;
   }
   
-  private static SerializedLambda extractSeralizedLambda(Object projectionFunction, Lookup lookup) {
+  private static SerializedLambda extractSerializedLambda(Object projectionFunction, Lookup lookup) {
     Class<?> lambdaClass = projectionFunction.getClass();
     MethodHandle writeReplace = (PRIVATE_LOOKUP_IN == null)?
         findWriteReplaceJava8(lambdaClass, lookup):
@@ -86,7 +86,7 @@ class ObjectSupportLambdas {
     SerializedLambda[] serializedLambdas = new SerializedLambda[projections.length];
     for(int i = 0; i < serializedLambdas.length; i++) {
       try {
-        serializedLambdas[i] = extractSeralizedLambda(projections[i], lookup);
+        serializedLambdas[i] = extractSerializedLambda(projections[i], lookup);
       } catch(IllegalArgumentException e) {
         throw new IllegalArgumentException("can not extract information from lambda at index " + i, e);
       }
