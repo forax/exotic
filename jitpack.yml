@@ -1,7 +1,7 @@
 before_install:
   - sdk update
   - sdk install java
-  - sdk use java
+  - sdk default java
 install:
   - echo "Maven on Java 11"
   - mvn install -DskipTests
