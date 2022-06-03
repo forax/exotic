@@ -1,4 +1,4 @@
-# exotic [![](https://api.travis-ci.org/forax/exotic.svg?branch=master)](https://travis-ci.org/forax/exotic)
+# exotic [![Continuous Integration](https://github.com/forax/exotic/actions/workflows/main.yml/badge.svg)](https://github.com/forax/exotic/actions/workflows/main.yml)
 A bestiary of classes implementing exotic semantics in Java
 
 In Java, a static final field is considered as a constant by the virtual machine,
