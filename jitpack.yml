@@ -3,7 +3,7 @@ before_install:
   - sdk install java
   - sdk default java
   - sdk install maven
-  - export JAVA_HOME=`which java`
+  - export JAVA_HOME=${SDKMAN_DIR}/candidates/java/current
   - echo $JAVA_HOME
 install:
   - mvn --version
