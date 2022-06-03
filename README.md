@@ -28,7 +28,7 @@ public static void setFoo(int value) {
 
 ### StableField - [javadoc](https://jitpack.io/com/github/forax/exotic/master/javadoc/com/github/forax/exotic/StableField.html)
 
-A field that becomes a constant if the object itsef is constant and the field is initialized
+A field that becomes a constant if the object itself is constant and the field is initialized
 
 ```java
 enum Option {
